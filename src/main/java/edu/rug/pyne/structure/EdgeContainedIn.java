@@ -10,12 +10,12 @@ import com.syncleus.ferma.annotations.OutVertex;
  * @author Patrick Beuks (s2288842) <code@beuks.net>
  */
 @GraphElement
-public abstract class EdgeBelongsTo extends AbstractEdgeFrame {
+public abstract class EdgeContainedIn extends AbstractEdgeFrame {
 
     @OutVertex
-    public abstract VertexClass getVertexClass();
+    public abstract VertexMethod getVertexMethod();
     
     @InVertex
-    public abstract VertexPackage getVertexPackage();
-    
+    public abstract VertexClass getVertexClass();
+
 }

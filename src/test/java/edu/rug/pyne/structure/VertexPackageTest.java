@@ -1,15 +1,7 @@
 package edu.rug.pyne.structure;
 
-import com.syncleus.ferma.DelegatingFramedGraph;
-import com.syncleus.ferma.FramedGraph;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,52 +12,12 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class VertexPackageTest {
 
-    private final static Graph GRAPH = TinkerGraph.open();
-    private final static FramedGraph FG;
-
-    static {
-        Set<Class<?>> types = new HashSet<>(Arrays.asList(new Class<?>[]{
-            VertexClass.class,
-            VertexPackage.class,
-            EdgeBelongsTo.class
-        }));
-        FG = new DelegatingFramedGraph(GRAPH, true, types);
-    }
-
-    private static <T> T getFromFG(String propertyKey, Object value, Class<T> cls) {
-        return FG.traverse(
-                (g) -> g.V().has(propertyKey, value)
-        ).next(cls);
-    }
-
-    private static Vertex getFromGraph(String propertyKey, Object value) {
-        return GRAPH.traversal().V().has(propertyKey, value).next();
-    }
-    
-    private static GraphTraversal<Vertex, Vertex> hasFromGraph(String propertyKey, Object value) {
-        return GRAPH.traversal().V().has(propertyKey, value);
-    }
+    private final static StructureTestUtility STU = new StructureTestUtility();
 
     @BeforeEach
     public void setUp() {
-        GRAPH.traversal().V().drop().iterate();
-        GRAPH.traversal().E().drop().iterate();
-        
-        VertexClass class1 = FG.addFramedVertex(VertexClass.class);
-        class1.setName("class1");
-        VertexClass class2 = FG.addFramedVertex(VertexClass.class);
-        class2.setName("class2");
-        VertexClass class3 = FG.addFramedVertex(VertexClass.class);
-        class3.setName("class3");
-        
-        VertexPackage package1 = FG.addFramedVertex(VertexPackage.class);
-        package1.setName("package1");
-        VertexPackage package2 = FG.addFramedVertex(VertexPackage.class);
-        package2.setName("package2");
-        
-        package1.addBelongingClass(class1);
-        package1.addBelongingClass(class2);
-        package2.addBelongingClass(class3);
+        STU.destroyGraph();
+        STU.generateGraph();
     }
 
     /**
@@ -73,10 +25,9 @@ public class VertexPackageTest {
      */
     @Test
     public void testGetName() {
-        System.out.println("getName");
 
-        VertexPackage package1fromFG = getFromFG("name", "package1", VertexPackage.class);
-        VertexPackage package2fromFG = getFromFG("name", "package2", VertexPackage.class);
+        VertexPackage package1fromFG = STU.getFromFG("name", "package1", VertexPackage.class);
+        VertexPackage package2fromFG = STU.getFromFG("name", "package2", VertexPackage.class);
 
         String expResult1 = "package1";
         String expResult2 = "package2";
@@ -85,7 +36,7 @@ public class VertexPackageTest {
         assertEquals(expResult1, result1);
         assertEquals(expResult2, result2);
 
-        long count = hasFromGraph("name", "package1").count().next();
+        long count = STU.hasFromGraph("name", "package1").count().next();
         assertEquals(1, count);
     }
 
@@ -94,20 +45,19 @@ public class VertexPackageTest {
      */
     @Test
     public void testSetName() {
-        System.out.println("setName");
 
-        VertexPackage package1fromFG = getFromFG("name", "package1", VertexPackage.class);
+        VertexPackage package1fromFG = STU.getFromFG("name", "package1", VertexPackage.class);
 
-        Vertex package2fromGraph = getFromGraph("name", "package2");
+        Vertex package2fromGraph = STU.getFromGraph("name", "package2");
 
         package1fromFG.setName("newPackage1Name");
         package2fromGraph.property("name", "newPackage2Name");
 
-        VertexPackage package1fromFGRenamed = getFromFG("name", "newPackage1Name", VertexPackage.class);
-        VertexPackage package2fromFGRenamed = getFromFG("name", "newPackage2Name", VertexPackage.class);
+        VertexPackage package1fromFGRenamed = STU.getFromFG("name", "newPackage1Name", VertexPackage.class);
+        VertexPackage package2fromFGRenamed = STU.getFromFG("name", "newPackage2Name", VertexPackage.class);
 
-        Vertex package1fromGraphRenamed = getFromGraph("name", "newPackage1Name");
-        Vertex package2fromGraphRenamed = getFromGraph("name", "newPackage2Name");
+        Vertex package1fromGraphRenamed = STU.getFromGraph("name", "newPackage1Name");
+        Vertex package2fromGraphRenamed = STU.getFromGraph("name", "newPackage2Name");
 
         assertNotNull(package1fromFGRenamed);
         assertNotNull(package2fromFGRenamed);
@@ -120,28 +70,27 @@ public class VertexPackageTest {
      */
     @Test
     public void testGetBelongingEdges() {
-        System.out.println("getBelongingEdges");
-        
-        VertexPackage package1FromFG = getFromFG("name", "package1", VertexPackage.class);
-        VertexPackage package2FromFG = getFromFG("name", "package2", VertexPackage.class);
-        
+
+        VertexPackage package1FromFG = STU.getFromFG("name", "package1", VertexPackage.class);
+        VertexPackage package2FromFG = STU.getFromFG("name", "package2", VertexPackage.class);
+
         List<EdgeBelongsTo> package1BelongToEdges = package1FromFG.getBelongingEdges();
         List<EdgeBelongsTo> package2BelongToEdges = package2FromFG.getBelongingEdges();
-        
+
         assertEquals(2, package1BelongToEdges.size());
         assertEquals(1, package2BelongToEdges.size());
-        
-        VertexClass class1 = getFromFG("name", "class1", VertexClass.class);
-        VertexClass class2 = getFromFG("name", "class2", VertexClass.class);
-        VertexClass class3 = getFromFG("name", "class3", VertexClass.class);
-        
-        assertTrue(package1BelongToEdges.get(0).getVertexClass().equals(class1) 
+
+        VertexClass class1 = STU.getFromFG("name", "class1", VertexClass.class);
+        VertexClass class2 = STU.getFromFG("name", "class2", VertexClass.class);
+        VertexClass class3 = STU.getFromFG("name", "class3", VertexClass.class);
+
+        assertTrue(package1BelongToEdges.get(0).getVertexClass().equals(class1)
                 || package1BelongToEdges.get(0).getVertexClass().equals(class2));
-        assertTrue(package1BelongToEdges.get(1).getVertexClass().equals(class1) 
+        assertTrue(package1BelongToEdges.get(1).getVertexClass().equals(class1)
                 || package1BelongToEdges.get(1).getVertexClass().equals(class2));
-        
+
         assertEquals(class3, package2BelongToEdges.get(0).getVertexClass());
-        
+
     }
 
     /**
@@ -149,28 +98,27 @@ public class VertexPackageTest {
      */
     @Test
     public void testGetBelongingClasses() {
-        System.out.println("getBelongingClasses");
-        
-        VertexPackage package1FromFG = getFromFG("name", "package1", VertexPackage.class);
-        VertexPackage package2FromFG = getFromFG("name", "package2", VertexPackage.class);
-        
+
+        VertexPackage package1FromFG = STU.getFromFG("name", "package1", VertexPackage.class);
+        VertexPackage package2FromFG = STU.getFromFG("name", "package2", VertexPackage.class);
+
         List<VertexClass> package1BelongingClasses = package1FromFG.getBelongingClasses();
         List<VertexClass> package2BelongingClasses = package2FromFG.getBelongingClasses();
-        
+
         assertEquals(2, package1BelongingClasses.size());
         assertEquals(1, package2BelongingClasses.size());
-        
-        VertexClass class1 = getFromFG("name", "class1", VertexClass.class);
-        VertexClass class2 = getFromFG("name", "class2", VertexClass.class);
-        VertexClass class3 = getFromFG("name", "class3", VertexClass.class);
-        
-        assertTrue(package1BelongingClasses.get(0).equals(class1) 
+
+        VertexClass class1 = STU.getFromFG("name", "class1", VertexClass.class);
+        VertexClass class2 = STU.getFromFG("name", "class2", VertexClass.class);
+        VertexClass class3 = STU.getFromFG("name", "class3", VertexClass.class);
+
+        assertTrue(package1BelongingClasses.get(0).equals(class1)
                 || package1BelongingClasses.get(0).equals(class2));
-        assertTrue(package1BelongingClasses.get(1).equals(class1) 
+        assertTrue(package1BelongingClasses.get(1).equals(class1)
                 || package1BelongingClasses.get(1).equals(class2));
-        
+
         assertEquals(class3, package2BelongingClasses.get(0));
-        
+
     }
 
     /**
@@ -178,20 +126,18 @@ public class VertexPackageTest {
      */
     @Test
     public void testAddBelongingClass() {
-        System.out.println("addBelongingClass");
-        
-        
-        VertexPackage package2FromFG = getFromFG("name", "package2", VertexPackage.class);
-        VertexClass class2 = getFromFG("name", "class2", VertexClass.class);
-        
+
+        VertexPackage package2FromFG = STU.getFromFG("name", "package2", VertexPackage.class);
+        VertexClass class2 = STU.getFromFG("name", "class2", VertexClass.class);
+
         List<VertexClass> package2BelongingClasses = package2FromFG.getBelongingClasses();
         assertEquals(1, package2BelongingClasses.size());
-        
+
         package2FromFG.addBelongingClass(class2);
-        
+
         package2BelongingClasses = package2FromFG.getBelongingClasses();
         assertEquals(2, package2BelongingClasses.size());
-        
+
     }
 
 }
