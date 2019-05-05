@@ -160,4 +160,131 @@ public class VertexPackageTest {
 
     }
 
+    /**
+     * Test of getPackageType method, of class VertexPackage.
+     */
+    @Test
+    public void testGetPackageType() {
+        VertexPackage package1FromFG = stu.getFromFG("name", "package1", VertexPackage.class);
+        Vertex package2FromGraph = stu.getFromGraph("name", "package2");
+
+        assertEquals("static", package1FromFG.getPackageType());
+        assertEquals("static", package1FromFG.getProperty("PackageType", String.class));
+        assertEquals("", package2FromGraph.property("PackageType").value());
+    }
+
+    /**
+     * Test of setPackageType method, of class VertexPackage.
+     */
+    @Test
+    public void testSetPackageType() {
+        String propertyName = "PackageType";
+        String test1 = "static";
+        String test2 = "";
+        
+        VertexPackage package1FromFG = stu.getFromFG("name", "package1", VertexPackage.class);
+        VertexPackage package2FromFG = stu.getFromFG("name", "package2", VertexPackage.class);
+        Vertex package1FromGraph = stu.getFromGraph("name", "package1");
+        Vertex package2FromGraph = stu.getFromGraph("name", "package2");
+        
+        assertEquals(test1, package1FromFG.getPackageType());
+        assertEquals(test1, package1FromFG.getProperty(propertyName, String.class));
+        assertEquals(test2, package2FromGraph.property(propertyName).value());
+        
+        package1FromFG.setPackageType(test2);
+        package2FromGraph.property(propertyName, test1);
+        
+        assertEquals(test2, package1FromFG.getPackageType());
+        assertEquals(test2, package1FromFG.getProperty(propertyName, String.class));
+        assertEquals(test2, package1FromGraph.property(propertyName).value());
+        assertEquals(test1, package2FromFG.getPackageType());
+        assertEquals(test1, package2FromFG.getProperty(propertyName, String.class));
+        assertEquals(test1, package2FromGraph.property(propertyName).value());
+    }
+
+    /**
+     * Test of getNumTotalDep method, of class VertexPackage.
+     */
+    @Test
+    public void testGetNumTotalDep() {
+        VertexPackage package1FromFG = stu.getFromFG("name", "package1", VertexPackage.class);
+        Vertex package2FromGraph = stu.getFromGraph("name", "package2");
+
+        assertEquals(3, package1FromFG.getNumTotalDep());
+        assertEquals(3, (int) package1FromFG.getProperty("numTotalDep", int.class));
+        assertEquals(1, package2FromGraph.property("numTotalDep").value());
+    }
+
+    /**
+     * Test of setNumTotalDep method, of class VertexPackage.
+     */
+    @Test
+    public void testSetNumTotalDep() {
+        String propertyName = "numTotalDep";
+        int test1 = 3;
+        int test2 = 1;
+        
+        VertexPackage package1FromFG = stu.getFromFG("name", "package1", VertexPackage.class);
+        VertexPackage package2FromFG = stu.getFromFG("name", "package2", VertexPackage.class);
+        Vertex package1FromGraph = stu.getFromGraph("name", "package1");
+        Vertex package2FromGraph = stu.getFromGraph("name", "package2");
+        
+        assertEquals(test1, package1FromFG.getNumTotalDep());
+        assertEquals(test1, (int) package1FromFG.getProperty(propertyName, int.class));
+        assertEquals(test2, package2FromGraph.property(propertyName).value());
+        
+        package1FromFG.setNumTotalDep(test2);
+        package2FromGraph.property(propertyName, test1);
+        
+        assertEquals(test2, package1FromFG.getNumTotalDep());
+        assertEquals(test2, (int) package1FromFG.getProperty(propertyName, int.class));
+        assertEquals(test2, package1FromGraph.property(propertyName).value());
+        assertEquals(test1, package2FromFG.getNumTotalDep());
+        assertEquals(test1, (int) package2FromFG.getProperty(propertyName, int.class));
+        assertEquals(test1, package2FromGraph.property(propertyName).value());
+    }
+
+    /**
+     * Test of getNumOfClassesInPackage method, of class VertexPackage.
+     */
+    @Test
+    public void testGetNumOfClassesInPackage() {
+        VertexPackage package1FromFG = stu.getFromFG("name", "package1", VertexPackage.class);
+        Vertex package2FromGraph = stu.getFromGraph("name", "package2");
+
+        assertEquals(2, package1FromFG.getNumOfClassesInPackage());
+        assertEquals(2, (int) package1FromFG.getProperty("numOfClassesInPackage", int.class));
+        assertEquals(1, package2FromGraph.property("numOfClassesInPackage").value());
+    }
+
+    /**
+     * Test of setNumOfClassesInPackage method, of class VertexPackage.
+     */
+    @Test
+    public void testSetNumOfClassesInPackage() {
+        String propertyName = "numOfClassesInPackage";
+        int test1 = 2;
+        int test2 = 1;
+        
+        VertexPackage package1FromFG = stu.getFromFG("name", "package1", VertexPackage.class);
+        VertexPackage package2FromFG = stu.getFromFG("name", "package2", VertexPackage.class);
+        Vertex package1FromGraph = stu.getFromGraph("name", "package1");
+        Vertex package2FromGraph = stu.getFromGraph("name", "package2");
+        
+        assertEquals(test1, package1FromFG.getNumOfClassesInPackage());
+        assertEquals(test1, package1FromFG.getProperty(propertyName, String.class));
+        assertEquals(test2, package2FromGraph.property(propertyName).value());
+        
+        package1FromFG.setNumOfClassesInPackage(test2);
+        package2FromGraph.property(propertyName, test1);
+        
+        assertEquals(test2, package1FromFG.getNumOfClassesInPackage());
+        assertEquals(test2, package1FromFG.getProperty(propertyName, String.class));
+        assertEquals(test2, package1FromGraph.property(propertyName).value());
+        assertEquals(test1, package2FromFG.getNumOfClassesInPackage());
+        assertEquals(test1, package2FromFG.getProperty(propertyName, String.class));
+        assertEquals(test1, package2FromGraph.property(propertyName).value());
+        
+    }
+
 }

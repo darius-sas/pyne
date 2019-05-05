@@ -237,4 +237,88 @@ public class VertexClassTest {
 
     }
 
+    /**
+     * Test of getClassType method, of class VertexClass.
+     */
+    @Test
+    public void testGetClassType() {
+        VertexClass class1FromFG = stu.getFromFG("name", "class1", VertexClass.class);
+        Vertex class2FromGraph = stu.getFromGraph("name", "class2");
+        
+        assertEquals("abstract", class1FromFG.getClassType());
+        assertEquals("abstract", class1FromFG.getProperty("ClassType", String.class));
+        assertEquals("interface", class2FromGraph.property("ClassType").value());
+    }
+
+    /**
+     * Test of setClassType method, of class VertexClass.
+     */
+    @Test
+    public void testSetClassType() {
+        String propertyName = "ClassType";
+        String test1 = "abstract";
+        String test2 = "interface";
+        
+        VertexClass class1FromFG = stu.getFromFG("name", "class1", VertexClass.class);
+        VertexClass class2FromFG = stu.getFromFG("name", "class2", VertexClass.class);
+        Vertex class1FromGraph = stu.getFromGraph("name", "class1");
+        Vertex class2FromGraph = stu.getFromGraph("name", "class2");
+        
+        assertEquals(test1, class1FromFG.getClassType());
+        assertEquals(test1, class1FromFG.getProperty(propertyName, String.class));
+        assertEquals(test2, class2FromGraph.property(propertyName).value());
+        
+        class1FromFG.setClassType(test2);
+        class2FromGraph.property(propertyName, test1);
+        
+        assertEquals(test2, class1FromFG.getClassType());
+        assertEquals(test2, class1FromFG.getProperty(propertyName, String.class));
+        assertEquals(test2, class1FromGraph.property(propertyName).value());
+        assertEquals(test1, class2FromFG.getClassType());
+        assertEquals(test1, class2FromFG.getProperty(propertyName, String.class));
+        assertEquals(test1, class2FromGraph.property(propertyName).value());
+    }
+
+    /**
+     * Test of getClassModifier method, of class VertexClass.
+     */
+    @Test
+    public void testGetClassModifier() {
+        VertexClass class1FromFG = stu.getFromFG("name", "class1", VertexClass.class);
+        Vertex class2FromGraph = stu.getFromGraph("name", "class2");
+        
+        assertEquals("public", class1FromFG.getClassModifier());
+        assertEquals("public", class1FromFG.getProperty("classModifier", String.class));
+        assertEquals("private", class2FromGraph.property("classModifier").value());
+    }
+
+    /**
+     * Test of setClassModifier method, of class VertexClass.
+     */
+    @Test
+    public void testSetClassModifier() {
+        String propertyName = "classModifier";
+        String test1 = "public";
+        String test2 = "private";
+        
+        VertexClass class1FromFG = stu.getFromFG("name", "class1", VertexClass.class);
+        VertexClass class2FromFG = stu.getFromFG("name", "class2", VertexClass.class);
+        Vertex class1FromGraph = stu.getFromGraph("name", "class1");
+        Vertex class2FromGraph = stu.getFromGraph("name", "class2");
+        
+        assertEquals(test1, class1FromFG.getClassModifier());
+        assertEquals(test1, class1FromFG.getProperty(propertyName, String.class));
+        assertEquals(test2, class2FromGraph.property(propertyName).value());
+        
+        class1FromFG.setClassModifier(test2);
+        class2FromGraph.property(propertyName, test1);
+        
+        assertEquals(test2, class1FromFG.getClassModifier());
+        assertEquals(test2, class1FromFG.getProperty(propertyName, String.class));
+        assertEquals(test2, class1FromGraph.property(propertyName).value());
+        assertEquals(test1, class2FromFG.getClassModifier());
+        assertEquals(test1, class2FromFG.getProperty(propertyName, String.class));
+        assertEquals(test1, class2FromGraph.property(propertyName).value());
+    }
+
 }

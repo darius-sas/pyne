@@ -23,6 +23,18 @@ public abstract class VertexClass extends AbstractVertexFrame {
 
     @Property("name")
     public abstract void setName(String name);
+    
+    @Property("ClassType")
+    public abstract String getClassType();
+    
+    @Property("ClassType")
+    public abstract void setClassType(String classType);
+    
+    @Property("classModifier")
+    public abstract String getClassModifier();
+    
+    @Property("classModifier")
+    public abstract void setClassModifier(String classModifier);
 
     @Incidence(label = "belongsTo", direction = Direction.OUT)
     public abstract EdgeBelongsTo getBelongsTo();
