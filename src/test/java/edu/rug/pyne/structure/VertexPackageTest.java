@@ -86,81 +86,6 @@ public class VertexPackageTest {
     }
 
     /**
-     * Test of getBelongingEdges method, of class VertexPackage.
-     */
-    @Test
-    public void testGetBelongingEdges() {
-
-        VertexPackage package1FromFG = stu.getFromFG("name", "package1", VertexPackage.class);
-        VertexPackage package2FromFG = stu.getFromFG("name", "package2", VertexPackage.class);
-
-        List<EdgeBelongsTo> package1BelongToEdges = package1FromFG.getBelongingEdges();
-        List<EdgeBelongsTo> package2BelongToEdges = package2FromFG.getBelongingEdges();
-
-        assertEquals(2, package1BelongToEdges.size());
-        assertEquals(1, package2BelongToEdges.size());
-
-        VertexClass class1 = stu.getFromFG("name", "class1", VertexClass.class);
-        VertexClass class2 = stu.getFromFG("name", "class2", VertexClass.class);
-        VertexClass class3 = stu.getFromFG("name", "class3", VertexClass.class);
-
-        assertTrue(package1BelongToEdges.get(0).getVertexClass().equals(class1)
-                || package1BelongToEdges.get(0).getVertexClass().equals(class2));
-        assertTrue(package1BelongToEdges.get(1).getVertexClass().equals(class1)
-                || package1BelongToEdges.get(1).getVertexClass().equals(class2));
-
-        assertEquals(class3, package2BelongToEdges.get(0).getVertexClass());
-
-    }
-
-    /**
-     * Test of getBelongingClasses method, of class VertexPackage.
-     */
-    @Test
-    public void testGetBelongingClasses() {
-
-        VertexPackage package1FromFG = stu.getFromFG("name", "package1", VertexPackage.class);
-        VertexPackage package2FromFG = stu.getFromFG("name", "package2", VertexPackage.class);
-
-        List<VertexClass> package1BelongingClasses = package1FromFG.getBelongingClasses();
-        List<VertexClass> package2BelongingClasses = package2FromFG.getBelongingClasses();
-
-        assertEquals(2, package1BelongingClasses.size());
-        assertEquals(1, package2BelongingClasses.size());
-
-        VertexClass class1 = stu.getFromFG("name", "class1", VertexClass.class);
-        VertexClass class2 = stu.getFromFG("name", "class2", VertexClass.class);
-        VertexClass class3 = stu.getFromFG("name", "class3", VertexClass.class);
-
-        assertTrue(package1BelongingClasses.get(0).equals(class1)
-                || package1BelongingClasses.get(0).equals(class2));
-        assertTrue(package1BelongingClasses.get(1).equals(class1)
-                || package1BelongingClasses.get(1).equals(class2));
-
-        assertEquals(class3, package2BelongingClasses.get(0));
-
-    }
-
-    /**
-     * Test of addBelongingClass method, of class VertexPackage.
-     */
-    @Test
-    public void testAddBelongingClass() {
-
-        VertexPackage package2FromFG = stu.getFromFG("name", "package2", VertexPackage.class);
-        VertexClass class2 = stu.getFromFG("name", "class2", VertexClass.class);
-
-        List<VertexClass> package2BelongingClasses = package2FromFG.getBelongingClasses();
-        assertEquals(1, package2BelongingClasses.size());
-
-        package2FromFG.addBelongingClass(class2);
-
-        package2BelongingClasses = package2FromFG.getBelongingClasses();
-        assertEquals(2, package2BelongingClasses.size());
-
-    }
-
-    /**
      * Test of getPackageType method, of class VertexPackage.
      */
     @Test
@@ -168,9 +93,9 @@ public class VertexPackageTest {
         VertexPackage package1FromFG = stu.getFromFG("name", "package1", VertexPackage.class);
         Vertex package2FromGraph = stu.getFromGraph("name", "package2");
 
-        assertEquals("static", package1FromFG.getPackageType());
-        assertEquals("static", package1FromFG.getProperty("PackageType", String.class));
-        assertEquals("", package2FromGraph.property("PackageType").value());
+        assertEquals("SystemPackage", package1FromFG.getPackageType());
+        assertEquals("SystemPackage", package1FromFG.getProperty("PackageType", String.class));
+        assertEquals("RetrievedPackage", package2FromGraph.property("PackageType").value());
     }
 
     /**
@@ -179,8 +104,8 @@ public class VertexPackageTest {
     @Test
     public void testSetPackageType() {
         String propertyName = "PackageType";
-        String test1 = "static";
-        String test2 = "";
+        String test1 = "SystemPackage";
+        String test2 = "RetrievedPackage";
         
         VertexPackage package1FromFG = stu.getFromFG("name", "package1", VertexPackage.class);
         VertexPackage package2FromFG = stu.getFromFG("name", "package2", VertexPackage.class);

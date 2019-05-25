@@ -42,10 +42,10 @@ public abstract class VertexMethod extends AbstractVertexFrame {
     public abstract void setReturnType(String returnType);
     
     @Property("argumentTypes")
-    public abstract List<String> getArgumentTypes();
+    public abstract String getArgumentTypes();
     
     @Property("argumentTypes")
-    public abstract void setArgumentTypes(List<String> argumentTypes);
+    public abstract void setArgumentTypes(String argumentTypes);
     
     @Property("accessModifier")
     public abstract String getAccessModifier();
@@ -71,6 +71,26 @@ public abstract class VertexMethod extends AbstractVertexFrame {
             edges.next().remove();
         }
         return addFramedEdge("containedIn", vertexClass, EdgeContainedIn.class);
+    }
+    
+    @Incidence(label = "refersTo", direction = Direction.OUT)
+    public abstract List<EdgeRefersTo> getRefersToEdges();
+    
+    @Adjacency(label = "refersTo", direction = Direction.OUT)
+    public abstract List<VertexMethod> getRefersToMethods();
+    
+    public EdgeRefersTo addRefersToMethod(VertexMethod refersToMethod) {
+        return addFramedEdge("refersTo", refersToMethod, EdgeRefersTo.class);
+    }
+    
+    @Incidence(label = "refersTo", direction = Direction.IN)
+    public abstract List<EdgeRefersTo> getReferingEdges();
+    
+    @Adjacency(label = "refersTo", direction = Direction.IN)
+    public abstract List<VertexMethod> getReferingMethods();
+    
+    public EdgeRefersTo addReferingMethod(VertexMethod refersToMethod) {
+        return refersToMethod.addFramedEdge("refersTo", this, EdgeRefersTo.class);
     }
     
 }

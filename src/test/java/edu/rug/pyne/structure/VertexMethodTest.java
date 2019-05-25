@@ -301,9 +301,9 @@ public class VertexMethodTest {
         VertexMethod method1FromFG = stu.getFromFG("name", "method1", VertexMethod.class);
         Vertex method2FromGraph = stu.getFromGraph("name", "method2");
         
-        assertLinesMatch(Arrays.asList("String"), method1FromFG.getArgumentTypes());
-        assertLinesMatch(Arrays.asList("String"), method1FromFG.getProperty("argumentTypes", List.class));
-        assertLinesMatch(Arrays.asList("String", "int"), (List<String>) method2FromGraph.property("argumentTypes").value());
+        assertEquals("String", method1FromFG.getArgumentTypes());
+        assertEquals("String", method1FromFG.getProperty("argumentTypes", List.class));
+        assertEquals("String,int", method2FromGraph.<String>value("argumentTypes"));
     }
 
     /**
@@ -312,27 +312,27 @@ public class VertexMethodTest {
     @Test
     public void testSetArgumentTypes() {
         String propertyName = "argumentTypes";
-        List<String> test1 = Arrays.asList("String");
-        List<String> test2 = Arrays.asList("String", "int");
+        String test1 = "String";
+        String test2 = "String,int";
         
         VertexMethod method1FromFG = stu.getFromFG("name", "method1", VertexMethod.class);
         VertexMethod method2FromFG = stu.getFromFG("name", "method2", VertexMethod.class);
         Vertex method1FromGraph = stu.getFromGraph("name", "method1");
         Vertex method2FromGraph = stu.getFromGraph("name", "method2");
         
-        assertLinesMatch(test1, method1FromFG.getArgumentTypes());
-        assertLinesMatch(test1, method1FromFG.getProperty(propertyName, List.class));
-        assertLinesMatch(test2, (List<String>) method2FromGraph.property(propertyName).value());
+        assertEquals(test1, method1FromFG.getArgumentTypes());
+        assertEquals(test1, method1FromFG.getProperty(propertyName, List.class));
+        assertEquals(test2, method2FromGraph.property(propertyName).value());
         
         method1FromFG.setArgumentTypes(test2);
         method2FromGraph.property(propertyName, test1);
         
-        assertLinesMatch(test2, method1FromFG.getArgumentTypes());
-        assertLinesMatch(test2, method1FromFG.getProperty(propertyName, List.class));
-        assertLinesMatch(test2, (List<String>) method1FromGraph.property(propertyName).value());
-        assertLinesMatch(test1, method2FromFG.getArgumentTypes());
-        assertLinesMatch(test1, method2FromFG.getProperty(propertyName, List.class));
-        assertLinesMatch(test1, (List<String>) method2FromGraph.property(propertyName).value());
+        assertEquals(test2, method1FromFG.getArgumentTypes());
+        assertEquals(test2, method1FromFG.getProperty(propertyName, List.class));
+        assertEquals(test2, method1FromGraph.property(propertyName).value());
+        assertEquals(test1, method2FromFG.getArgumentTypes());
+        assertEquals(test1, method2FromFG.getProperty(propertyName, List.class));
+        assertEquals(test1, method2FromGraph.property(propertyName).value());
     }
 
     /**

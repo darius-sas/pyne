@@ -1,6 +1,7 @@
 package edu.rug.pyne.structure;
 
 import java.util.List;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +38,7 @@ public class VertexClassTest {
      */
     @Test
     public void testLabel() {
-        assertEquals(3, stu.getFramedGraph().traverse((g) -> g.V().hasLabel("class")).toList(VertexClass.class).size());
+        assertEquals(4, stu.getFramedGraph().traverse((g) -> g.V().has(T.label, "class")).toList(VertexClass.class).size());
     }
 
     /**
@@ -153,91 +154,6 @@ public class VertexClassTest {
     }
 
     /**
-     * Test of getContainingEdges method, of class VertexClass.
-     */
-    @Test
-    public void testGetContainingEdges() {
-
-        VertexClass class1FromFG = stu.getFromFG("name", "class1", VertexClass.class);
-        VertexClass class2FromFG = stu.getFromFG("name", "class2", VertexClass.class);
-        VertexClass class3FromFG = stu.getFromFG("name", "class3", VertexClass.class);
-
-        List<EdgeContainedIn> class1ContainedInEdges = class1FromFG.getContainingEdges();
-        List<EdgeContainedIn> class2ContainedInEdges = class2FromFG.getContainingEdges();
-        List<EdgeContainedIn> class3ContainedInEdges = class3FromFG.getContainingEdges();
-
-        assertEquals(1, class1ContainedInEdges.size());
-        assertEquals(1, class2ContainedInEdges.size());
-        assertEquals(2, class3ContainedInEdges.size());
-
-        VertexMethod method1 = stu.getFromFG("name", "method1", VertexMethod.class);
-        VertexMethod method2 = stu.getFromFG("name", "method2", VertexMethod.class);
-        VertexMethod method3 = stu.getFromFG("name", "method3", VertexMethod.class);
-        VertexMethod method4 = stu.getFromFG("name", "method4", VertexMethod.class);
-
-        assertEquals(method1, class1ContainedInEdges.get(0).getVertexMethod());
-        assertEquals(method2, class2ContainedInEdges.get(0).getVertexMethod());
-
-        assertTrue(class3ContainedInEdges.get(0).getVertexMethod().equals(method3)
-                || class3ContainedInEdges.get(0).getVertexMethod().equals(method4));
-        assertTrue(class3ContainedInEdges.get(1).getVertexMethod().equals(method3)
-                || class3ContainedInEdges.get(1).getVertexMethod().equals(method4));
-
-    }
-
-    /**
-     * Test of getContainingMethods method, of class VertexClass.
-     */
-    @Test
-    public void testGetContainingMethods() {
-
-        VertexClass class1FromFG = stu.getFromFG("name", "class1", VertexClass.class);
-        VertexClass class2FromFG = stu.getFromFG("name", "class2", VertexClass.class);
-        VertexClass class3FromFG = stu.getFromFG("name", "class3", VertexClass.class);
-
-        List<VertexMethod> class1ContainingMethods = class1FromFG.getContainingMethods();
-        List<VertexMethod> class2ContainingMethods = class2FromFG.getContainingMethods();
-        List<VertexMethod> class3ContainingMethods = class3FromFG.getContainingMethods();
-
-        assertEquals(1, class1ContainingMethods.size());
-        assertEquals(1, class2ContainingMethods.size());
-        assertEquals(2, class3ContainingMethods.size());
-
-        VertexMethod method1 = stu.getFromFG("name", "method1", VertexMethod.class);
-        VertexMethod method2 = stu.getFromFG("name", "method2", VertexMethod.class);
-        VertexMethod method3 = stu.getFromFG("name", "method3", VertexMethod.class);
-        VertexMethod method4 = stu.getFromFG("name", "method4", VertexMethod.class);
-
-        assertEquals(method1, class1ContainingMethods.get(0));
-        assertEquals(method2, class2ContainingMethods.get(0));
-
-        assertTrue(class3ContainingMethods.get(0).equals(method3)
-                || class3ContainingMethods.get(0).equals(method4));
-        assertTrue(class3ContainingMethods.get(1).equals(method3)
-                || class3ContainingMethods.get(1).equals(method4));
-
-    }
-
-    /**
-     * Test of addContainingMethod method, of class VertexClass.
-     */
-    @Test
-    public void testAddContainingMethod() {
-
-        VertexClass class2FromFG = stu.getFromFG("name", "class2", VertexClass.class);
-        VertexMethod class2 = stu.getFromFG("name", "method3", VertexMethod.class);
-
-        List<VertexMethod> class2ContainingMethods = class2FromFG.getContainingMethods();
-        assertEquals(1, class2ContainingMethods.size());
-
-        class2FromFG.addContainingMethod(class2);
-
-        class2ContainingMethods = class2FromFG.getContainingMethods();
-        assertEquals(2, class2ContainingMethods.size());
-
-    }
-
-    /**
      * Test of getClassType method, of class VertexClass.
      */
     @Test
@@ -245,9 +161,9 @@ public class VertexClassTest {
         VertexClass class1FromFG = stu.getFromFG("name", "class1", VertexClass.class);
         Vertex class2FromGraph = stu.getFromGraph("name", "class2");
         
-        assertEquals("abstract", class1FromFG.getClassType());
-        assertEquals("abstract", class1FromFG.getProperty("ClassType", String.class));
-        assertEquals("interface", class2FromGraph.property("ClassType").value());
+        assertEquals(VertexClass.ClassType.RetrievedClass, class1FromFG.getClassType());
+        assertEquals(VertexClass.ClassType.RetrievedClass.name(), class1FromFG.getProperty("ClassType", String.class));
+        assertEquals(VertexClass.ClassType.SystemClass.name(), class2FromGraph.property("ClassType").value());
     }
 
     /**
@@ -256,8 +172,8 @@ public class VertexClassTest {
     @Test
     public void testSetClassType() {
         String propertyName = "ClassType";
-        String test1 = "abstract";
-        String test2 = "interface";
+        VertexClass.ClassType test1 = VertexClass.ClassType.RetrievedClass;
+        VertexClass.ClassType test2 = VertexClass.ClassType.SystemClass;
         
         VertexClass class1FromFG = stu.getFromFG("name", "class1", VertexClass.class);
         VertexClass class2FromFG = stu.getFromFG("name", "class2", VertexClass.class);
@@ -265,18 +181,18 @@ public class VertexClassTest {
         Vertex class2FromGraph = stu.getFromGraph("name", "class2");
         
         assertEquals(test1, class1FromFG.getClassType());
-        assertEquals(test1, class1FromFG.getProperty(propertyName, String.class));
-        assertEquals(test2, class2FromGraph.property(propertyName).value());
+        assertEquals(test1.name(), class1FromFG.getProperty(propertyName, String.class));
+        assertEquals(test2.name(), class2FromGraph.property(propertyName).value());
         
         class1FromFG.setClassType(test2);
-        class2FromGraph.property(propertyName, test1);
+        class2FromGraph.property(propertyName, test1.name());
         
         assertEquals(test2, class1FromFG.getClassType());
-        assertEquals(test2, class1FromFG.getProperty(propertyName, String.class));
-        assertEquals(test2, class1FromGraph.property(propertyName).value());
+        assertEquals(test2.name(), class1FromFG.getProperty(propertyName, String.class));
+        assertEquals(test2.name(), class1FromGraph.property(propertyName).value());
         assertEquals(test1, class2FromFG.getClassType());
-        assertEquals(test1, class2FromFG.getProperty(propertyName, String.class));
-        assertEquals(test1, class2FromGraph.property(propertyName).value());
+        assertEquals(test1.name(), class2FromFG.getProperty(propertyName, String.class));
+        assertEquals(test1.name(), class2FromGraph.property(propertyName).value());
     }
 
     /**
@@ -287,9 +203,9 @@ public class VertexClassTest {
         VertexClass class1FromFG = stu.getFromFG("name", "class1", VertexClass.class);
         Vertex class2FromGraph = stu.getFromGraph("name", "class2");
         
-        assertEquals("public", class1FromFG.getClassModifier());
-        assertEquals("public", class1FromFG.getProperty("classModifier", String.class));
-        assertEquals("private", class2FromGraph.property("classModifier").value());
+        assertEquals("none", class1FromFG.getClassModifier());
+        assertEquals("none", class1FromFG.getProperty("classModifier", String.class));
+        assertEquals("enum", class2FromGraph.property("classModifier").value());
     }
 
     /**
@@ -298,8 +214,8 @@ public class VertexClassTest {
     @Test
     public void testSetClassModifier() {
         String propertyName = "classModifier";
-        String test1 = "public";
-        String test2 = "private";
+        String test1 = "none";
+        String test2 = "enum";
         
         VertexClass class1FromFG = stu.getFromFG("name", "class1", VertexClass.class);
         VertexClass class2FromFG = stu.getFromFG("name", "class2", VertexClass.class);
