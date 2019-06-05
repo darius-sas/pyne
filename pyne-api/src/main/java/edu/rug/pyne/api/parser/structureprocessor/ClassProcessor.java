@@ -1,9 +1,9 @@
-package edu.rug.pyne.parser.structureprocessor;
+package edu.rug.pyne.api.parser.structureprocessor;
 
 import com.syncleus.ferma.FramedGraph;
-import edu.rug.pyne.parser.Parser;
-import edu.rug.pyne.structure.VertexClass;
-import edu.rug.pyne.structure.VertexPackage;
+import edu.rug.pyne.api.parser.Parser;
+import edu.rug.pyne.api.structure.VertexClass;
+import edu.rug.pyne.api.structure.VertexPackage;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;

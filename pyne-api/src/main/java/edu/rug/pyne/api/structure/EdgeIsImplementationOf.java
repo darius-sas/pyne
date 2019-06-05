@@ -1,4 +1,4 @@
-package edu.rug.pyne.structure;
+package edu.rug.pyne.api.structure;
 
 import com.syncleus.ferma.AbstractEdgeFrame;
 import com.syncleus.ferma.annotations.GraphElement;

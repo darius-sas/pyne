@@ -1,11 +1,11 @@
-package edu.rug.pyne.parser.analysisprocessor;
+package edu.rug.pyne.api.parser.analysisprocessor;
 
 import com.syncleus.ferma.FramedGraph;
-import edu.rug.pyne.parser.Parser;
-import edu.rug.pyne.parser.structureprocessor.ClassProcessor;
-import edu.rug.pyne.structure.EdgeDependsOn;
-import edu.rug.pyne.structure.VertexClass;
-import edu.rug.pyne.structure.VertexPackage;
+import edu.rug.pyne.api.parser.Parser;
+import edu.rug.pyne.api.parser.structureprocessor.ClassProcessor;
+import edu.rug.pyne.api.structure.EdgeDependsOn;
+import edu.rug.pyne.api.structure.VertexClass;
+import edu.rug.pyne.api.structure.VertexPackage;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;

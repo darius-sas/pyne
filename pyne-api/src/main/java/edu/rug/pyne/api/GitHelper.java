@@ -1,8 +1,6 @@
-package edu.rug.pyne;
+package edu.rug.pyne.api;
 
-import com.syncleus.ferma.DelegatingFramedGraph;
-import com.syncleus.ferma.FramedGraph;
-import edu.rug.pyne.parser.Parser;
+import edu.rug.pyne.api.parser.Parser;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -12,12 +10,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.tinkerpop.gremlin.structure.Graph;
-import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
@@ -144,7 +139,7 @@ public class GitHelper {
         try {
             FileUtils.delete(cloneDir, FileUtils.RECURSIVE);
         } catch (IOException ex) {
-            Logger.getLogger(Pyne.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
         }
         git.close();
     }

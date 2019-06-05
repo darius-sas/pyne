@@ -1,7 +1,7 @@
-package edu.rug.pyne.parser.removeprocessor;
+package edu.rug.pyne.api.parser.removeprocessor;
 
 import com.syncleus.ferma.FramedGraph;
-import edu.rug.pyne.parser.PostProcess;
+import edu.rug.pyne.api.parser.PostProcess;
 import java.util.List;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 

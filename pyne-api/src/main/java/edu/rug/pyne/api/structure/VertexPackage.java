@@ -1,4 +1,4 @@
-package edu.rug.pyne.structure;
+package edu.rug.pyne.api.structure;
 
 import com.syncleus.ferma.AbstractVertexFrame;
 import com.syncleus.ferma.DefaultClassInitializer;

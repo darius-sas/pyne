@@ -1,4 +1,4 @@
-package edu.rug.pyne.parser.analysisprocessor;
+package edu.rug.pyne.api.parser.analysisprocessor;
 
 import com.syncleus.ferma.FramedGraph;
 import spoon.processing.AbstractProcessor;

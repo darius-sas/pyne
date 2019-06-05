@@ -1,5 +1,6 @@
 package edu.rug.pyne.structure;
 
+import edu.rug.pyne.api.structure.VertexPackage;
 import java.util.List;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.junit.jupiter.api.AfterAll;

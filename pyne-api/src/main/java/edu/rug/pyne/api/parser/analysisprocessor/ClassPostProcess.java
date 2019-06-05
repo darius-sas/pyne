@@ -1,8 +1,8 @@
-package edu.rug.pyne.parser.analysisprocessor;
+package edu.rug.pyne.api.parser.analysisprocessor;
 
 import com.syncleus.ferma.FramedGraph;
-import edu.rug.pyne.parser.PostProcess;
-import edu.rug.pyne.structure.VertexClass;
+import edu.rug.pyne.api.parser.PostProcess;
+import edu.rug.pyne.api.structure.VertexClass;
 import java.util.List;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 

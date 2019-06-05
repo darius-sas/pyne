@@ -1,5 +1,8 @@
 package edu.rug.pyne.structure;
 
+import edu.rug.pyne.api.structure.VertexPackage;
+import edu.rug.pyne.api.structure.VertexClass;
+import edu.rug.pyne.api.structure.EdgeBelongsTo;
 import com.syncleus.ferma.DefaultClassInitializer;
 import com.syncleus.ferma.DelegatingFramedGraph;
 import com.syncleus.ferma.FramedGraph;

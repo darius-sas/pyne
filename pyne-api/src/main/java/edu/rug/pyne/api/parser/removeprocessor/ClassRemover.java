@@ -1,8 +1,8 @@
-package edu.rug.pyne.parser.removeprocessor;
+package edu.rug.pyne.api.parser.removeprocessor;
 
 import com.syncleus.ferma.FramedGraph;
-import edu.rug.pyne.parser.Parser;
-import edu.rug.pyne.structure.VertexClass;
+import edu.rug.pyne.api.parser.Parser;
+import edu.rug.pyne.api.structure.VertexClass;
 import java.io.File;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.declaration.CtClass;

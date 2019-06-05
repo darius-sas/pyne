@@ -1,4 +1,4 @@
-package edu.rug.pyne.structure;
+package edu.rug.pyne.api.structure;
 
 import com.syncleus.ferma.AbstractVertexFrame;
 import com.syncleus.ferma.DefaultClassInitializer;
@@ -7,7 +7,6 @@ import com.syncleus.ferma.annotations.Adjacency;
 import com.syncleus.ferma.annotations.GraphElement;
 import com.syncleus.ferma.annotations.Incidence;
 import com.syncleus.ferma.annotations.Property;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.tinkerpop.gremlin.structure.Direction;
@@ -73,8 +72,6 @@ public abstract class VertexClass extends AbstractVertexFrame {
     
     public void removeEdges() {
         
-        removeAfferentsOf();
-        removeEfferentsOf();
         removeDependsOn();
         removeImplementationOf();
         removeChildsOf();
@@ -149,31 +146,6 @@ public abstract class VertexClass extends AbstractVertexFrame {
         return edgeIsAfferentOf;
     }
 
-    public void removeAfferentsOf() {
-        VertexPackage belongsToPackage = getBelongsToPackage();
-        List<VertexClass> otherBelongs = belongsToPackage.getBelongsToClasses();
-
-        List<VertexPackage> otherAfferents = new ArrayList<>();
-
-        for (VertexClass otherBelong : otherBelongs) {
-            if (otherBelong.equals(this)) {
-                continue;
-            }
-            for (VertexPackage afferentOfPackage : otherBelong.getAfferentOfPackages()) {
-                if (!otherAfferents.contains(afferentOfPackage)) {
-                    otherAfferents.add(afferentOfPackage);
-                }
-            }
-        }
-
-        for (EdgeIsAfferentOf afferentOfEdge : getAfferentOfEdges()) {
-            if (!otherAfferents.contains(afferentOfEdge.getVertexPackage())) {
-                belongsToPackage.removePackageIsAfferentOf(afferentOfEdge.getVertexPackage());
-            }
-            afferentOfEdge.remove();
-        }
-    }
-
     @Incidence(label = "isEfferentOf")
     public abstract List<EdgeIsEfferentOf> getEfferentOfEdges();
 
@@ -183,9 +155,6 @@ public abstract class VertexClass extends AbstractVertexFrame {
     public EdgeIsEfferentOf addEfferentOf(VertexPackage vertexPackage) {
         return addFramedEdge("isEfferentOf", vertexPackage, EdgeIsEfferentOf.class);
     }
-
-    @Adjacency(label = "isEfferentOf")
-    public abstract void removeEfferentsOf();
 
     @Incidence(label = "dependsOn")
     public abstract List<EdgeDependsOn> getDependOnEdges();

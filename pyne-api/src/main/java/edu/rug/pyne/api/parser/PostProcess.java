@@ -1,4 +1,4 @@
-package edu.rug.pyne.parser;
+package edu.rug.pyne.api.parser;
 
 import com.syncleus.ferma.FramedGraph;
 
