@@ -8,12 +8,12 @@ import spoon.reflect.declaration.CtInterface;
  *
  * @author Patrick Beuks (s2288842) <code@beuks.net>
  */
-public class InterfaceProcessor extends AbstractProcessor<CtInterface<?>>{
+public class InterfaceProcessor extends AbstractProcessor<CtInterface<?>> {
 
     private final ClassProcessor processor;
 
-    public InterfaceProcessor(FramedGraph framedGraph) {
-        processor = new ClassProcessor(framedGraph);
+    public InterfaceProcessor(FramedGraph framedGraph, ClassProcessor processor) {
+        this.processor = processor;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package edu.rug.pyne.parser.analysisprocessor;
 
 import com.syncleus.ferma.FramedGraph;
+import edu.rug.pyne.parser.Parser;
 import edu.rug.pyne.parser.structureprocessor.ClassProcessor;
 import edu.rug.pyne.structure.EdgeDependsOn;
 import edu.rug.pyne.structure.VertexClass;
@@ -33,7 +34,9 @@ import spoon.reflect.visitor.filter.TypeFilter;
  */
 public class ClassAnalysis extends AbstractProcessor<CtClass<?>> {
     
-    private static int cur = 0;
+    public static int CUR = 0;
+    private final FramedGraph framedGraph;
+    private final Parser parser;
 
     private class AnnotationConsumer implements Consumer<CtAnnotation<? extends Annotation>> {
 
@@ -70,10 +73,10 @@ public class ClassAnalysis extends AbstractProcessor<CtClass<?>> {
         }
     }
 
-    private final FramedGraph framedGraph;
 
-    public ClassAnalysis(FramedGraph framedGraph) {
+    public ClassAnalysis(Parser parser, FramedGraph framedGraph) {
         this.framedGraph = framedGraph;
+        this.parser = parser;
     }
 
     @Override
@@ -83,11 +86,20 @@ public class ClassAnalysis extends AbstractProcessor<CtClass<?>> {
 
     public void processClass(CtType<?> clazz) {
 
+        
         VertexClass vertex = VertexClass.getVertexClassByName(framedGraph, clazz.getQualifiedName());
         if (vertex == null) {
             return;
         }
-        System.out.println("Class " + ++cur + " of " + ClassProcessor.TOTAL);
+        
+        if (parser.getAddedFiles() != null) {
+            if (!parser.getAddedFiles().contains(clazz.getPosition().getFile())) {
+                return;
+            }
+        }
+        
+        clazz.getPosition().getFile();
+        System.out.println("Class " + ++CUR + " of " + ClassProcessor.TOTAL);
         processClassDependencies(clazz, vertex);
         processClassReferences(clazz, vertex);
 
@@ -97,13 +109,11 @@ public class ClassAnalysis extends AbstractProcessor<CtClass<?>> {
         if (clazz.getSuperclass() != null) {
             VertexClass superClass = getOrCreateVertexClass(clazz.getSuperclass());
             vertexClass.addChildOfClass(superClass);
-            createCoupling(vertexClass, superClass);
         }
 
         for (CtTypeReference<?> superInterface : clazz.getSuperInterfaces()) {
             VertexClass superInterfaceClass = getOrCreateVertexClass(superInterface);
             vertexClass.addImplematationOfClass(superInterfaceClass);
-            createCoupling(vertexClass, superInterfaceClass);
         }
     }
 
@@ -116,23 +126,23 @@ public class ClassAnalysis extends AbstractProcessor<CtClass<?>> {
 
             VertexClass referencedclassVertex = getOrCreateVertexClass(referencedclass.getReference());
 
-            if (!referencedclass.getQualifiedName().equals(vertexClass.getName())) {
-
-                Optional<EdgeDependsOn> dependency = vertexClass.getDependOnEdges().stream().filter(
-                        (edge) -> edge.getDependOn().equals(referencedclassVertex)
-                ).findFirst();
-
-                if (dependency.isEmpty()) {
-                    EdgeDependsOn dependOnEdge = vertexClass.addDependOnClass(referencedclassVertex);
-                    dependOnEdge.setWeight(1);
-                } else {
-                    dependency.get().incrementWeight();
-                }
+            if (referencedclass.getQualifiedName().equals(vertexClass.getName())) {
+                continue;
             }
 
-            createCoupling(vertexClass, referencedclassVertex);
+            Optional<EdgeDependsOn> dependency = vertexClass.getDependOnEdges().stream().filter(
+                    (edge) -> edge.getDependOn().equals(referencedclassVertex)
+            ).findFirst();
 
+            if (dependency.isEmpty()) {
+                EdgeDependsOn dependOnEdge = vertexClass.addDependOnClass(referencedclassVertex);
+                dependOnEdge.setWeight(1);
+            } else {
+                dependency.get().incrementWeight();
+            }
+            
         }
+        
     }
 
     private List<CtType> getClassReferences(CtType clazz) {
@@ -172,22 +182,6 @@ public class ClassAnalysis extends AbstractProcessor<CtClass<?>> {
         }
 
         return references;
-    }
-
-    private void createCoupling(VertexClass vertexClass, VertexClass coupleVertex) {
-
-        if (vertexClass.getBelongsToPackage().equals(coupleVertex.getBelongsToPackage())) {
-            return;
-        }
-
-        if (!vertexClass.getAfferentOfPackages().contains(coupleVertex.getBelongsToPackage())) {
-            vertexClass.addAfferentOf(coupleVertex.getBelongsToPackage());
-        }
-
-        if (!coupleVertex.getEfferentOfPackages().contains(vertexClass.getBelongsToPackage())) {
-            coupleVertex.addEfferentOf(vertexClass.getBelongsToPackage());
-        }
-
     }
 
     private VertexClass getOrCreateVertexClass(CtTypeReference clazz) {

@@ -12,8 +12,8 @@ public class InterfaceAnalysis extends AbstractProcessor<CtInterface<?>> {
 
     private final ClassAnalysis analyser;
 
-    public InterfaceAnalysis(FramedGraph framedGraph) {
-        analyser = new ClassAnalysis(framedGraph);
+    public InterfaceAnalysis(FramedGraph framedGraph, ClassAnalysis analyser) {
+        this.analyser = analyser;
     }
 
     @Override

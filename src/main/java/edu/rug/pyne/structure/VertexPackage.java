@@ -7,6 +7,7 @@ import com.syncleus.ferma.annotations.GraphElement;
 import com.syncleus.ferma.annotations.Incidence;
 import com.syncleus.ferma.annotations.Property;
 import java.util.List;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
 import spoon.reflect.reference.CtPackageReference;
 
@@ -71,6 +72,14 @@ public abstract class VertexPackage extends AbstractVertexFrame {
         setNumTotalDep(getNumTotalDep() + 1);
     }
 
+    public void decrementNumOfTotalDep() {
+        int numdep = getNumTotalDep();
+        if (numdep <= 0) {
+            throw new IllegalStateException("Cannot have a negative number of total depedancies");
+        }
+        setNumTotalDep(numdep - 1);
+    }
+
     @Property("numOfClassesInPackage")
     public abstract int getNumOfClassesInPackage();
 
@@ -99,5 +108,24 @@ public abstract class VertexPackage extends AbstractVertexFrame {
         incrementNumTotalDep();
         return addFramedEdge("packageIsAfferentOf", afferentOfPackage, EdgePackageIsAfferentOf.class);
     }
+    
+    public void removePackageIsAfferentOf(VertexPackage afferentOfPackage) {
+        for (EdgePackageIsAfferentOf afferentOfEdge : getAfferentOfEdges()) {
+            if (afferentOfEdge.getAfferentOf().equals(afferentOfPackage)) {
+                afferentOfEdge.remove();
+                decrementNumOfTotalDep();
+                return;
+            }
+        }
+    }
+    
+    @Adjacency(label = "belongsTo", direction = Direction.IN)
+    public abstract List<VertexClass> getBelongsToClasses();
+    
+    @Adjacency(label = "isEfferentOf", direction = Direction.IN)
+    public abstract List<VertexClass> getEffertentOfClasses();
+    
+    @Incidence(label = "isEfferentOf", direction = Direction.IN)
+    public abstract List<EdgeIsEfferentOf> getEffertentOfEdges();
 
 }
