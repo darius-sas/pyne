@@ -1,6 +1,7 @@
 package edu.rug.pyne.structure;
 
 import com.syncleus.ferma.AbstractVertexFrame;
+import com.syncleus.ferma.DefaultClassInitializer;
 import com.syncleus.ferma.FramedGraph;
 import com.syncleus.ferma.annotations.Adjacency;
 import com.syncleus.ferma.annotations.GraphElement;
@@ -31,7 +32,7 @@ public abstract class VertexClass extends AbstractVertexFrame {
 
     public static VertexClass createRetrievedClass(FramedGraph framedGraph, String clazz) {
 
-        VertexClass vertex = framedGraph.addFramedVertex(VertexClass.class, T.label, LABEL);
+        VertexClass vertex = framedGraph.addFramedVertex(new DefaultClassInitializer<>(VertexClass.class), T.label, LABEL);
         vertex.setName(clazz);
         vertex.setClassType(ClassType.RetrievedClass);
         vertex.setClassModifier("none");
@@ -50,7 +51,7 @@ public abstract class VertexClass extends AbstractVertexFrame {
             classModifier = "Interface";
         }
 
-        VertexClass vertex = framedGraph.addFramedVertex(VertexClass.class, T.label, LABEL);
+        VertexClass vertex = framedGraph.addFramedVertex(new DefaultClassInitializer<>(VertexClass.class), T.label, LABEL);
         vertex.setName(clazz.getQualifiedName());
         vertex.setClassType(ClassType.SystemClass);
         vertex.setClassModifier(classModifier);

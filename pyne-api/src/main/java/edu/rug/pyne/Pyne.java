@@ -4,7 +4,6 @@ import com.syncleus.ferma.DelegatingFramedGraph;
 import com.syncleus.ferma.FramedGraph;
 import edu.rug.pyne.parser.Parser;
 import edu.rug.pyne.structure.VertexClass;
-import edu.rug.pyne.structure.VertexMethod;
 import edu.rug.pyne.structure.VertexPackage;
 import java.io.File;
 import java.io.IOException;
@@ -73,7 +72,6 @@ public class Pyne {
             
             List<? extends VertexPackage> packages = framedGraph.traverse((g) -> g.V().hasLabel("package")).toList(VertexPackage.class);
             List<? extends VertexClass> classes = framedGraph.traverse((g) -> g.V().hasLabel("class")).toList(VertexClass.class);
-            List<? extends VertexMethod> methods = framedGraph.traverse((g) -> g.V().hasLabel("method")).toList(VertexMethod.class);
             
             System.out.println("***Graph created from compiled file*** - graph:" + framedGraph.getRawTraversal().getGraph());
             gitHelper.parseCommit(parser, "759c76a2a99497a74c09c89c07d16cd46f4860ed");
@@ -114,10 +112,7 @@ public class Pyne {
                 //System.out.println(aClass.getDependingEdges().size());
                 //System.out.println(aClass.getBelongsToPackage().getName());
             }
-            //System.out.println("Methods: ");
-            for (VertexMethod aMethod : methods) {
-                //System.out.println(aMethod);
-            }
+            
         } catch (IOException | GitAPIException ex) {
             Logger.getLogger(Pyne.class.getName()).log(Level.SEVERE, null, ex);
         } finally {

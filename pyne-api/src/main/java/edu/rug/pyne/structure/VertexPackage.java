@@ -1,6 +1,7 @@
 package edu.rug.pyne.structure;
 
 import com.syncleus.ferma.AbstractVertexFrame;
+import com.syncleus.ferma.DefaultClassInitializer;
 import com.syncleus.ferma.FramedGraph;
 import com.syncleus.ferma.annotations.Adjacency;
 import com.syncleus.ferma.annotations.GraphElement;
@@ -22,7 +23,7 @@ public abstract class VertexPackage extends AbstractVertexFrame {
 
     public static VertexPackage createRetrievedPackage(FramedGraph framedGraph, String PackageName) {
 
-        VertexPackage vertex = framedGraph.addFramedVertex(VertexPackage.class, T.label, LABEL);
+        VertexPackage vertex = framedGraph.addFramedVertex(new DefaultClassInitializer<>(VertexPackage.class), T.label, LABEL);
         vertex.setName(PackageName);
         vertex.setPackageType("RetrievedPackage");
         vertex.setNumTotalDep(0);
@@ -35,7 +36,7 @@ public abstract class VertexPackage extends AbstractVertexFrame {
 
         String packageType = ctPackage.isImplicit()? "RetrievedPackage" : "SystemPackage";
 
-        VertexPackage vertex = framedGraph.addFramedVertex(VertexPackage.class, T.label, LABEL);
+        VertexPackage vertex = framedGraph.addFramedVertex(new DefaultClassInitializer<>(VertexPackage.class), T.label, LABEL);
         vertex.setName(ctPackage.getQualifiedName());
         vertex.setPackageType(packageType);
         vertex.setNumTotalDep(0);
