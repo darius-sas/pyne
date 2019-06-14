@@ -15,15 +15,24 @@ public class ClassPostProcess implements PostProcess {
     @Override
     public void postProcess(FramedGraph framedGraph) {
         
+        System.out.println("Post processing classes");
         List<? extends VertexClass> systemClasses = framedGraph.traverse((g) -> g.V().hasLabel(VertexClass.LABEL).has("ClassType", VertexClass.ClassType.SystemClass.name())).toList(VertexClass.class);
 
+        System.out.println("Removing orphan nodes");
         framedGraph.traverse((g) -> {
             return g.V().hasLabel(VertexClass.LABEL).where(
                     __.both("dependsOn", "isChildOf", "isImplementationOf").count().is(0)
             );
         }).toList(VertexClass.class).forEach((orphanNode) -> orphanNode.remove());
 
+        System.out.println("Processing afferent edges");
+        int cur = 0;
         for (VertexClass systemClass : systemClasses) {
+            
+            System.out.print("\rClass " + ++cur + " of " + systemClasses.size());
+            if (cur == systemClasses.size()) {
+                System.out.print("\n");
+            }
             List<? extends VertexClass> coupleVertexes = framedGraph.traverse((g) -> systemClass.getRawTraversal().out("dependsOn", "isChildOf", "isImplementationOf")).toList(VertexClass.class);
             
             for (VertexClass coupleVertex : coupleVertexes) {

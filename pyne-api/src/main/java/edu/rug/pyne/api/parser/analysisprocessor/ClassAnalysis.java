@@ -6,12 +6,15 @@ import edu.rug.pyne.api.parser.structureprocessor.ClassProcessor;
 import edu.rug.pyne.api.structure.EdgeDependsOn;
 import edu.rug.pyne.api.structure.VertexClass;
 import edu.rug.pyne.api.structure.VertexPackage;
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
@@ -99,7 +102,10 @@ public class ClassAnalysis extends AbstractProcessor<CtClass<?>> {
         }
         
         clazz.getPosition().getFile();
-        System.out.println("Class " + ++CUR + " of " + ClassProcessor.TOTAL);
+        System.out.print("\rClass " + ++CUR + " of " + ClassProcessor.TOTAL);
+        if (ClassProcessor.TOTAL == CUR) {
+            System.out.print("\n");
+        }
         processClassDependencies(clazz, vertex);
         processClassReferences(clazz, vertex);
 

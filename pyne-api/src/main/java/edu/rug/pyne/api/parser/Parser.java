@@ -10,10 +10,6 @@ import edu.rug.pyne.api.parser.removeprocessor.ClassRemover;
 import edu.rug.pyne.api.parser.removeprocessor.InterfaceRemover;
 import edu.rug.pyne.api.parser.structureprocessor.ClassProcessor;
 import edu.rug.pyne.api.parser.structureprocessor.InterfaceProcessor;
-import edu.rug.pyne.api.structure.EdgeIsAfferentOf;
-import edu.rug.pyne.api.structure.EdgeIsEfferentOf;
-import edu.rug.pyne.api.structure.VertexClass;
-import edu.rug.pyne.api.structure.VertexPackage;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.File;
@@ -164,9 +160,32 @@ public class Parser {
     }
 
     public void process() {
+        if (structureProcessors.isEmpty()) {
+            addDefaultStructureProcessors();
+        }
+        if (analysisProcessors.isEmpty()) {
+            addDefaultAnalysisProcessors();
+        }
+        if (removeProcessors.isEmpty()) {
+            addDefaultRemoveProcessors();
+        }
+        if (analysisPostProcessors.isEmpty()) {
+            addDefaultAnalysisPostProcessors();
+        }
+        if (removePostProcessors.isEmpty()) {
+            addDefaultRemovePostProcessors();
+        }
         Launcher launcher = new Launcher();
-        for (String string : inputList) {
-            launcher.addInputResource(new File(rootDirectory, string).getAbsolutePath());
+        if (inputList.isEmpty()) {
+            File dir = new File(rootDirectory, File.separator + "src" + File.separator + "main" + File.separator + "java");
+            if (!dir.exists()) {
+                dir = new File(rootDirectory, File.separator);
+            }
+            launcher.addInputResource(dir.getAbsolutePath());
+        } else {
+            for (String string : inputList) {
+                launcher.addInputResource(new File(rootDirectory, string).getAbsolutePath());
+            }
         }
         launcher.buildModel();
         launcher.getModel();

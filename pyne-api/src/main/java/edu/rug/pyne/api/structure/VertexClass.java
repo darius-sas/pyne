@@ -75,13 +75,13 @@ public abstract class VertexClass extends AbstractVertexFrame {
         removeDependsOn();
         removeImplementationOf();
         removeChildsOf();
-        removeBelongsTo();
         
     }
     
     @Override
     public void remove() {
-        this.removeEdges();
+        removeEdges();
+        removeBelongsTo();
         super.remove();
     }
 
@@ -120,6 +120,9 @@ public abstract class VertexClass extends AbstractVertexFrame {
     }
 
     public void removeBelongsTo() {
+        if (getBelongsToPackage() == null) {
+            System.out.println(getName());
+        }
         getBelongsToPackage().decrementNumOfClassesInPackage();
         if (getBelongsToPackage().getNumOfClassesInPackage() == 0) {
             getBelongsToPackage().remove();

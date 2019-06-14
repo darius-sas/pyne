@@ -3,7 +3,6 @@ package edu.rug.pyne.api;
 import edu.rug.pyne.api.parser.Parser;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,15 +32,23 @@ public class GitHelper {
     private final File cloneDir;
     private final Git git;
 
-    public GitHelper(URI repositoryToClone) throws IOException, GitAPIException {
+    public GitHelper(String repositoryToClone) throws IOException, GitAPIException {
 
         WindowCacheConfig config = new WindowCacheConfig();
         config.setPackedGitMMAP(false);
         config.install();
 
         cloneDir = Files.createTempDirectory("temp_git_clone_").toFile();
-        git = Git.cloneRepository().setURI(repositoryToClone.getPath()).setDirectory(cloneDir).call();
-
+        git = Git.cloneRepository().setURI(repositoryToClone).setDirectory(cloneDir).call();
+        
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            this.cleanUp();
+        }));
+        
+    }
+    
+    public Git getGit() {
+        return git;
     }
 
     public void parseCommit(Parser parser, String commitId) throws IOException {
@@ -64,9 +71,13 @@ public class GitHelper {
         config.setPackedGitMMAP(false);
         config.install();
         
+        System.out.println("Checking out commit");
         git.checkout().setName(commitId).call();
+        
         parser.setAddedFiles(null);
         parser.setRemovedFiles(null);
+        
+        System.out.println("Processing classes");
         parser.process();
         parser.getGraph().variables().set(COMMIT_ID_VARIABLE, commitId);
     }
@@ -85,6 +96,7 @@ public class GitHelper {
         CanonicalTreeParser canonicalTreeParserOld = new CanonicalTreeParser(null, reader, revOldCommit.getTree().getId());
         CanonicalTreeParser canonicalTreeParserNew = new CanonicalTreeParser(null, reader, revNewCommit.getTree().getId());
 
+        System.out.println("Finding diffrences");
         List<DiffEntry> diffEntries = git.diff().setOldTree(canonicalTreeParserOld).setNewTree(canonicalTreeParserNew).call();
         List<File> addedFiles = new ArrayList<>();
         List<File> modifiedFiles = new ArrayList<>();
@@ -119,21 +131,25 @@ public class GitHelper {
         config.setPackedGitMMAP(false);
         config.install();
         
+        System.out.println("Checking out old commit");
         git.checkout().setName(oldCommit).call();
 
+        System.out.println("Proccessing removed files");
         parser.processRemoved();
         
         config = new WindowCacheConfig();
         config.setPackedGitMMAP(false);
         config.install();
         
+        System.out.println("Checking out new commit");
         git.checkout().setName(newCommit).call();
 
+        System.out.println("Processing classes");
         parser.process();
         parser.getGraph().variables().set(COMMIT_ID_VARIABLE, newCommit);
     }
 
-    public void cleanUp() {
+    private void cleanUp() {
 
         git.getRepository().close();
         try {
