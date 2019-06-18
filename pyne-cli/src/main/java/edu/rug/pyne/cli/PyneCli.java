@@ -212,10 +212,14 @@ public class PyneCli {
             nameBuilder.append(commit).append(".graphml");
 
             gitHelper.parseCommit(parser, commit);
-            graph.traversal().io(
-                    new File(outputDirectory, nameBuilder.toString())
-                            .getAbsolutePath()
-            ).with(IO.writer, IO.graphml).write().iterate();
+            
+            File outputFile = new File(outputDirectory, nameBuilder.toString());
+            
+            graph.traversal().io(outputFile.getAbsolutePath())
+                    .with(IO.writer, IO.graphml).write().iterate();
+            
+            System.out.println("Saved graph to: " 
+                    + outputFile.getAbsolutePath());
 
             calendar.setTime(commitDate);
             calendar.add(period, 1);

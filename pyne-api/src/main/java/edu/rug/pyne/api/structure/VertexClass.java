@@ -9,6 +9,7 @@ import com.syncleus.ferma.annotations.Incidence;
 import com.syncleus.ferma.annotations.Property;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.T;
@@ -166,7 +167,24 @@ public abstract class VertexClass extends AbstractVertexFrame {
     public abstract List<VertexClass> getDependOnClasses();
 
     public EdgeDependsOn addDependOnClass(VertexClass dependingClass) {
-        return addFramedEdge("dependsOn", dependingClass, EdgeDependsOn.class);
+        
+        if (dependingClass.getName().equals(getName())) {
+            return null;
+        }
+            
+        Optional<EdgeDependsOn> dependency = getDependOnEdges().stream().filter(
+                (edge) -> edge.getDependOn().equals(dependingClass)
+        ).findFirst();
+        
+        EdgeDependsOn dependOnEdge;
+        if (dependency.isEmpty()) {
+            dependOnEdge = addFramedEdge("dependsOn", dependingClass, EdgeDependsOn.class);
+            dependOnEdge.setWeight(1);
+        } else {
+            dependOnEdge = dependency.get();
+            dependOnEdge.incrementWeight();
+        }
+        return dependOnEdge;
     }
 
     @Adjacency(label = "dependsOn")
