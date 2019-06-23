@@ -258,22 +258,6 @@ public abstract class VertexPackage extends AbstractVertexFrame {
     }
 
     /**
-     * Removes a edge for a single package from the graph between this package
-     * and the given package
-     *
-     * @param afferentOfPackage The package to remove the afferent edges between
-     */
-    public void removePackageIsAfferentOf(VertexPackage afferentOfPackage) {
-        for (EdgePackageIsAfferentOf afferentOfEdge : getAfferentOfEdges()) {
-            if (afferentOfEdge.getAfferentOf().equals(afferentOfPackage)) {
-                afferentOfEdge.remove();
-                decrementNumOfTotalDep();
-                return;
-            }
-        }
-    }
-
-    /**
      * Removes all package is afferent of edges.
      */
     @Adjacency(label = "packageIsAfferentOf")
