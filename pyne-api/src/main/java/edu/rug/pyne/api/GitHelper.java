@@ -7,8 +7,8 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -29,6 +29,9 @@ import org.eclipse.jgit.util.FileUtils;
  */
 public class GitHelper {
 
+    private static final Logger LOGGER
+            = LogManager.getLogger(GitHelper.class);
+
     // The graph key used to store the commit id on
     private static final String COMMIT_ID_VARIABLE = "CommitId";
 
@@ -36,6 +39,8 @@ public class GitHelper {
     private final File cloneDir;
     // The git created after the clone
     private final Git git;
+    
+    private boolean cleand = false;
 
     /**
      * Creates a clone repository in a temporary location and gives access to
@@ -70,6 +75,15 @@ public class GitHelper {
     public Git getGit() {
         return git;
     }
+    
+    /**
+     * Get the temp dir as file
+     * 
+     * @return The temp dir
+     */
+    public File getDir() {
+        return cloneDir.getAbsoluteFile();
+    }
 
     /**
      * parses a given commit. If a commit id is set on the graph it will check
@@ -92,8 +106,7 @@ public class GitHelper {
                 diffGraph(parser, graphCommit.get(), commitId);
             }
         } catch (GitAPIException ex) {
-            Logger.getLogger(GitHelper.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            LOGGER.trace(null, ex);
         }
     }
 
@@ -114,7 +127,7 @@ public class GitHelper {
         config.setPackedGitMMAP(false);
         config.install();
 
-        System.out.println("Checking out commit");
+        LOGGER.info("Checking out commit");
         git.checkout().setName(commitId).call();
 
         // Reset files if not already on null. 
@@ -123,7 +136,7 @@ public class GitHelper {
         parser.setModifiedFiles(null);
         parser.setRemovedFiles(null);
 
-        System.out.println("Processing classes");
+        LOGGER.info("Processing classes");
         parser.process();
 
         // Set commit id on graph
@@ -165,7 +178,7 @@ public class GitHelper {
                 null, reader, revNewCommit.getTree().getId()
         );
 
-        System.out.println("Finding diffrences");
+        LOGGER.info("Finding diffrences");
         List<DiffEntry> diffEntries = git
                 .diff()
                 .setOldTree(canonicalTreeParserOld)
@@ -211,10 +224,10 @@ public class GitHelper {
         config.setPackedGitMMAP(false);
         config.install();
 
-        System.out.println("Checking out old commit");
+        LOGGER.info("Checking out old commit");
         git.checkout().setName(oldCommit).call();
 
-        System.out.println("Proccessing removed files");
+        LOGGER.info("Proccessing removed files");
         parser.processRemoved();
 
         // Set git config before checkout. 
@@ -223,10 +236,10 @@ public class GitHelper {
         config.setPackedGitMMAP(false);
         config.install();
 
-        System.out.println("Checking out new commit");
+        LOGGER.info("Checking out new commit");
         git.checkout().setName(newCommit).call();
 
-        System.out.println("Processing classes");
+        LOGGER.info("Processing classes");
         parser.process();
 
         // Set commit id on graph
@@ -236,15 +249,19 @@ public class GitHelper {
     /**
      * Closes the repository, tries to remove all temporary files and closes git
      */
-    private void cleanUp() {
+    public void cleanUp() {
 
+        if (cleand) {
+            return;
+        }
         git.getRepository().close();
         try {
             FileUtils.delete(cloneDir, FileUtils.RECURSIVE);
         } catch (IOException ex) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
+            LOGGER.trace(null, ex);
         }
         git.close();
+        cleand = true;
     }
 
 }

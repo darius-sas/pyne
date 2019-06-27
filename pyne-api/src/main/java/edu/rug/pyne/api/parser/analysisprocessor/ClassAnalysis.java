@@ -36,9 +36,6 @@ import spoon.reflect.visitor.filter.TypeFilter;
  */
 public class ClassAnalysis extends AbstractProcessor<CtClass<?>> {
 
-    // The index of the class being processed.
-    public static int CUR = 0;
-
     // The graph with the vertex classes
     private final FramedGraph framedGraph;
 
@@ -143,13 +140,6 @@ public class ClassAnalysis extends AbstractProcessor<CtClass<?>> {
             if (!parser.getAddedFiles().contains(file)) {
                 return;
             }
-        }
-
-        // Most consoles restart the line by using \r.
-        // This makes it so that you do not get long lists of steps
-        System.out.print("\rClass " + ++CUR + " of " + ClassProcessor.TOTAL);
-        if (ClassProcessor.TOTAL == CUR) {
-            System.out.print("\n");
         }
 
         processClassDependencies(clazz, vertex);

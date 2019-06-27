@@ -6,3 +6,6 @@
 /pyne-cli/target/
 /pyne-cli/nbactions.xml
 /pyne-cli/nb-configuration.xml
+/pyne-demo/target/
+/pyne-demo/nbactions.xml
+/pyne-demo/nb-configuration.xml

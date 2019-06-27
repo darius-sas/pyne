@@ -16,10 +16,7 @@ import spoon.reflect.reference.CtTypeReference;
  * @author Patrick Beuks (s2288842) <code@beuks.net>
  */
 public class ClassProcessor extends AbstractProcessor<CtClass<?>> {
-
-    // Total number of classes added to the graph
-    public static int TOTAL = 0;
-
+    
     // The graph to add the vertexes to
     private final FramedGraph framedGraph;
 
@@ -66,9 +63,6 @@ public class ClassProcessor extends AbstractProcessor<CtClass<?>> {
                 return;
             }
         }
-        
-        // We are processing this class. Add it to the total.
-        TOTAL++;
 
         // Try to get the vertex by name
         VertexClass vertex = VertexClass.getVertexClassByName(

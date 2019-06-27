@@ -20,6 +20,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PatternOptionBuilder;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.apache.tinkerpop.gremlin.process.traversal.IO;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
@@ -35,6 +37,9 @@ import org.eclipse.jgit.revwalk.filter.RevFilter;
  * @author Patrick Beuks (s2288842) <code@beuks.net>
  */
 public class PyneCli {
+
+    private static final Logger LOGGER
+            = LogManager.getLogger(PyneCli.class);
 
     /**
      * Start the application
@@ -108,7 +113,7 @@ public class PyneCli {
         }
         // Check if an URI to a repo is given
         if (cmd.getArgs().length != 1) {
-            System.out.println("Please give one and only one URI for a repo");
+            LOGGER.fatal("Please give one and only one URI for a repo");
             printHelp(options);
             return;
         }
@@ -118,7 +123,7 @@ public class PyneCli {
         try {
             repoURI = new URI(cmd.getArgs()[0]);
         } catch (URISyntaxException ex) {
-            System.out.println("Not a valid URI given for a repo.");
+            LOGGER.fatal("Not a valid URI given for a repo.", ex);
             printHelp(options);
             return;
         }
@@ -142,7 +147,7 @@ public class PyneCli {
                 period = Calendar.YEAR;
                 break;
             default:
-                System.out.println("\""
+                LOGGER.fatal("\""
                         + cmd.getOptionValue(periodOption.getOpt())
                         + "\" is not a valid period");
                 printHelp(options);
@@ -158,7 +163,7 @@ public class PyneCli {
                 endDate = dateInstance
                         .parse(cmd.getOptionValue(endDateOption.getOpt()));
             } catch (java.text.ParseException ex) {
-                System.out.println("Could not parse end date.");
+                LOGGER.fatal("Could not parse end date", ex);
                 return;
             }
         } else {
@@ -172,7 +177,7 @@ public class PyneCli {
                 startDate = dateInstance
                         .parse(cmd.getOptionValue(startDateOption.getOpt()));
             } catch (java.text.ParseException ex) {
-                System.out.println("Could not parse start date");
+                LOGGER.fatal("Could not parse start date", ex);
                 return;
             }
         } else {
@@ -192,7 +197,7 @@ public class PyneCli {
                 outputDirectory.mkdirs();
             }
             if (!outputDirectory.isDirectory()) {
-                System.out.println("Output directory is not a directory "
+                LOGGER.error("Output directory is not a directory "
                         + "or cannot be read.");
                 return;
             }
@@ -201,7 +206,6 @@ public class PyneCli {
             outputDirectory = FileSystems.getDefault().getPath(".").toFile();
         }
 
-        
         // Get and set the input direcotries
         Graph graph = TinkerGraph.open();
         Parser parser = new Parser(graph);
@@ -244,12 +248,12 @@ public class PyneCli {
                 continue;
             }
 
-            System.out.println("\n\nParsing commit: "
+            LOGGER.info("Parsing commit: "
                     + commitDate + " | " + commit);
 
             // Parse the commit
             gitHelper.parseCommit(parser, commit);
-            
+
             // Build the name for the output file
             StringBuilder nameBuilder = new StringBuilder();
             nameBuilder.append(dateInstance.format(commitDate)).append("-");
@@ -261,8 +265,8 @@ public class PyneCli {
             graph.traversal().io(outputFile.getAbsolutePath())
                     .with(IO.writer, IO.graphml).write().iterate();
 
-            System.out.println("Saved graph to: "
-                    + outputFile.getAbsolutePath());
+            LOGGER.info("Saved graph to: "
+                    + outputFile.getAbsolutePath() + "\n\n");
 
             // Set the date to the next period
             calendar.setTime(commitDate);
@@ -275,7 +279,7 @@ public class PyneCli {
 
     /**
      * Prints the help message
-     * 
+     *
      * @param options The options to display in the help message
      */
     private static void printHelp(Options options) {

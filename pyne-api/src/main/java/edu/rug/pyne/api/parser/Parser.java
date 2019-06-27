@@ -316,10 +316,7 @@ public class Parser {
                 );
             }
         }
-
-        ClassProcessor.TOTAL = 0;
-        ClassAnalysis.CUR = 0;
-
+        
         launcher.buildModel();
         launcher.getModel();
         SpoonModelBuilder modelBuilder = launcher.getModelBuilder();
@@ -371,9 +368,6 @@ public class Parser {
         launcher.buildModel();
         launcher.getModel();
         SpoonModelBuilder modelBuilder = launcher.getModelBuilder();
-
-        ClassProcessor.TOTAL = 0;
-        ClassAnalysis.CUR = 0;
 
         launcher.process();
         modelBuilder.process(structureProcessors);

@@ -4,6 +4,8 @@ import com.syncleus.ferma.FramedGraph;
 import edu.rug.pyne.api.parser.PostProcess;
 import edu.rug.pyne.api.structure.VertexClass;
 import java.util.List;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 
 /**
@@ -14,6 +16,9 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
  */
 public class ClassPostProcess implements PostProcess {
 
+    private static final Logger LOGGER
+            = LogManager.getLogger(ClassPostProcess.class);
+
     /**
      * Processes the graph after the analysis step
      * 
@@ -22,8 +27,8 @@ public class ClassPostProcess implements PostProcess {
     @Override
     public void postProcess(FramedGraph framedGraph) {
 
-        System.out.println("Post processing classes");
-        System.out.println("Removing orphan nodes");
+        LOGGER.info("Post processing classes");
+        LOGGER.info("Removing orphan nodes");
         // Get nodes with no edges going out or in
         framedGraph.traverse((g) -> {
             return g.V().hasLabel(VertexClass.LABEL).where(
@@ -33,7 +38,7 @@ public class ClassPostProcess implements PostProcess {
         }).toList(VertexClass.class)
                 .forEach((orphanNode) -> orphanNode.remove());
 
-        System.out.println("Processing afferent edges");
+        LOGGER.info("Processing afferent edges");
         String SystemClassLabel = VertexClass.ClassType.SystemClass.name();
 
         // Get all system classes
@@ -44,15 +49,8 @@ public class ClassPostProcess implements PostProcess {
                 }
         ).toList(VertexClass.class);
 
-        int cur = 0;
-        int size = systemClasses.size();
         // Loop over the system classes
         for (VertexClass systemClass : systemClasses) {
-
-            System.out.print("\rClass " + ++cur + " of " + size);
-            if (cur == size) {
-                System.out.print("\n");
-            }
 
             // Get all classes that this class points to
             List<? extends VertexClass> outVertexes = framedGraph.traverse(
