@@ -33,10 +33,27 @@ public abstract class EdgePackageIsAfferentOf extends AbstractEdgeFrame {
     @OutVertex
     public abstract VertexPackage getAfferentBy();
     
+    /**
+     * The weight of this edge
+     * 
+     * @return The weight
+     */
     @Property("Weight")
     public abstract int getWeight();
     
+    /**
+     * Sets the weight of this edge
+     * 
+     * @param weight The weight to set
+     */
     @Property("Weight")
     public abstract void setWeight(int weight);
+    
+    /**
+     * Increments the weight by one.
+     */
+    public void incrementWeight() {
+        setWeight(getWeight() + 1);
+    }
     
 }

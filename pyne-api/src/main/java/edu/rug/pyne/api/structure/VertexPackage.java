@@ -8,6 +8,7 @@ import com.syncleus.ferma.annotations.GraphElement;
 import com.syncleus.ferma.annotations.Incidence;
 import com.syncleus.ferma.annotations.Property;
 import java.util.List;
+import java.util.Optional;
 import org.apache.tinkerpop.gremlin.structure.T;
 import spoon.reflect.reference.CtPackageReference;
 
@@ -249,12 +250,30 @@ public abstract class VertexPackage extends AbstractVertexFrame {
             VertexPackage afferentOfPackage
     ) {
 
-        incrementNumTotalDep();
-        return addFramedEdge(
-                "packageIsAfferentOf",
-                afferentOfPackage,
-                EdgePackageIsAfferentOf.class
-        );
+        // Find if this class already is afferent of the given package
+        Optional<EdgePackageIsAfferentOf> dependency = getAfferentOfEdges()
+                .stream().filter(
+                        (edge) -> edge.getAfferentOf().equals(afferentOfPackage)
+                ).findFirst();
+
+        EdgePackageIsAfferentOf packageAfferentOf;
+        if (dependency.isEmpty()) {
+            // Create an edge and set the weight to 1
+            packageAfferentOf = addFramedEdge(
+                    "packageIsAfferentOf",
+                    afferentOfPackage,
+                    EdgePackageIsAfferentOf.class
+            );
+
+            incrementNumTotalDep();
+            packageAfferentOf.setWeight(1);
+        } else {
+            // Increment the weight.
+            packageAfferentOf = dependency.get();
+            packageAfferentOf.incrementWeight();
+        }
+
+        return packageAfferentOf;
     }
 
     /**

@@ -289,9 +289,7 @@ public abstract class VertexClass extends AbstractVertexFrame {
 
         // Check if we need to add a edge between packages.
         VertexPackage belongsToPackage = getBelongsToPackage();
-        if (!belongsToPackage.getAfferentOfPackages().contains(vertexPackage)) {
-            belongsToPackage.addAfferentOfPackage(vertexPackage);
-        }
+        belongsToPackage.addAfferentOfPackage(vertexPackage);
 
         return edgeIsAfferentOf;
     }
