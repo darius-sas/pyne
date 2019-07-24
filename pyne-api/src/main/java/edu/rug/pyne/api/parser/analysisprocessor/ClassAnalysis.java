@@ -289,7 +289,7 @@ public class ClassAnalysis extends AbstractProcessor<CtClass<?>> {
                 .createRetrievedClass(framedGraph, clazz.getQualifiedName());
 
         // An inner class does not have a package. So we need to go outside
-        // until we find the partent class that does have a package.
+        // until we find the parent class that does have a package.
         CtTypeReference cur = clazz;
         while (!cur.isPrimitive() && cur.getPackage() == null) {
             cur = cur.getDeclaringType();
@@ -297,13 +297,13 @@ public class ClassAnalysis extends AbstractProcessor<CtClass<?>> {
         
         VertexPackage packageVertex;
         // If the type is a primative (like int or byte) it does not have a
-        // package, So we set it to "(default package)"
+        // package, So we set it to java.lang
         if (cur.isPrimitive()) {
             packageVertex = VertexPackage
-                    .getVertexPackageByName(framedGraph, "(default package)");
+                    .getVertexPackageByName(framedGraph, "java.lang");
             if (packageVertex == null) {
                 packageVertex = VertexPackage.createRetrievedPackage(
-                        framedGraph, "(default package)"
+                        framedGraph, "java.lang"
                 );
             }
         } else {
