@@ -132,6 +132,21 @@ public abstract class VertexClass extends AbstractVertexFrame {
     @Property("name")
     public abstract void setName(String name);
 
+
+    /**
+     * The number of lines of code in the class.
+     * @return the lines of code in the class as a long.
+     */
+    @Property("linesOfCode")
+    public abstract long getLinesOfCode();
+
+    /**
+     * Set the number of lines of code in the source code of this class.
+     * @param linesOfCode the lines of code.
+     */
+    @Property("linesOfCode")
+    public abstract void setLinesOfCode(long linesOfCode);
+
     /**
      * This function returns the class type of the vertex class
      *

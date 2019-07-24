@@ -4,10 +4,13 @@ import com.syncleus.ferma.FramedGraph;
 import edu.rug.pyne.api.parser.Parser;
 import edu.rug.pyne.api.structure.VertexClass;
 import edu.rug.pyne.api.structure.VertexPackage;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.util.regex.Pattern;
 
 /**
  * This a structure processor. It takes the source code class and adds it as a
@@ -94,9 +97,20 @@ public class ClassProcessor extends AbstractProcessor<CtClass<?>> {
             }
             
             vertex.setBelongsTo(packageVertex);
-
+            vertex.setLinesOfCode(countLOC(clazz));
         }
 
+    }
+
+    private Pattern linePattern = Pattern.compile("[^\\s*].*[\\n\\r]+");
+    private long countLOC(CtType<?> clazz){
+        var sourceCode = clazz.toString();
+
+        var matcher = linePattern.matcher(sourceCode);
+        var linesOfCode = 0;
+        while(matcher.find())
+            linesOfCode++;
+        return linesOfCode;
     }
 
 }
