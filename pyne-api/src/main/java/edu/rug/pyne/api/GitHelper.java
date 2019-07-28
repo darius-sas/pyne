@@ -33,38 +33,42 @@ public class GitHelper {
             = LogManager.getLogger(GitHelper.class);
 
     // The graph key used to store the commit id on
-    private static final String COMMIT_ID_VARIABLE = "CommitId";
+    public static final String COMMIT_ID_VARIABLE = "CommitId";
 
-    // The temporary location to store the cione in
     private final File cloneDir;
-    // The git created after the clone
     private final Git git;
-    
     private boolean cleand = false;
 
     /**
      * Creates a clone repository in a temporary location and gives access to
      * parse functions using commit ids
      *
-     * @param repositoryToClone The URI to the repository to clone
+     * @param repository The URI to the repository to clone
+     * @param repositoryIsRemote Whether the repo is on a remote or not
      * @throws IOException Thrown when failed to create a temporary directory
      * @throws GitAPIException Thrown when failed to clone the repository.
      */
-    public GitHelper(String repositoryToClone)
+    public GitHelper(String repository, boolean repositoryIsRemote)
             throws IOException, GitAPIException {
 
         WindowCacheConfig config = new WindowCacheConfig();
         config.setPackedGitMMAP(false);
         config.install();
 
-        cloneDir = Files.createTempDirectory("temp_git_clone_").toFile();
-        git = Git.cloneRepository().setURI(repositoryToClone)
-                .setDirectory(cloneDir).call();
+        if (repositoryIsRemote) {
+            cloneDir = Files.createTempDirectory("temp_git_clone_").toFile();
+            git = Git.cloneRepository().setURI(repository)
+                    .setDirectory(cloneDir).call();
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            this.cleanUp();
-        }));
+            Runtime.getRuntime().addShutdownHook(new Thread(this::cleanUp));
+        }else {
+            cloneDir = new File(repository);
+            git = Git.open(cloneDir);
+        }
+    }
 
+    public GitHelper(String repository) throws IOException, GitAPIException{
+        this(repository, true);
     }
 
     /**
@@ -77,9 +81,9 @@ public class GitHelper {
     }
     
     /**
-     * Get the temp dir as file
+     * Get the dir of the repo as a file
      * 
-     * @return The temp dir
+     * @return The dire used by this repo
      */
     public File getDir() {
         return cloneDir.getAbsoluteFile();
