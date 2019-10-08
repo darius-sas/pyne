@@ -110,7 +110,7 @@ public class GitHelper {
                 diffGraph(parser, graphCommit.get(), commitId);
             }
         } catch (GitAPIException ex) {
-            LOGGER.trace(null, ex);
+            LOGGER.error("Git error while parsing commit " + commitId, ex);
         }
     }
 
