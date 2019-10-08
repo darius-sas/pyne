@@ -302,7 +302,7 @@ public class Parser {
         }
         Launcher launcher = new Launcher();
 
-        if (inputList.isEmpty()) {
+         if (inputList.isEmpty()) {
             File dir = new File(rootDirectory, File.separator + "src"
                     + File.separator + "main" + File.separator + "java");
             if (!dir.exists()) {
