@@ -2,6 +2,7 @@ package edu.rug.pyne.api.parser;
 
 import com.syncleus.ferma.DelegatingFramedGraph;
 import com.syncleus.ferma.FramedGraph;
+import edu.rug.pyne.api.GitHelper;
 import edu.rug.pyne.api.parser.analysisprocessor.ClassAnalysis;
 import edu.rug.pyne.api.parser.analysisprocessor.ClassPostProcess;
 import edu.rug.pyne.api.parser.analysisprocessor.InterfaceAnalysis;
@@ -10,9 +11,15 @@ import edu.rug.pyne.api.parser.removeprocessor.ClassRemover;
 import edu.rug.pyne.api.parser.removeprocessor.InterfaceRemover;
 import edu.rug.pyne.api.parser.structureprocessor.ClassProcessor;
 import edu.rug.pyne.api.parser.structureprocessor.InterfaceProcessor;
+
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.File;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
@@ -29,6 +36,9 @@ public class Parser {
 
     // The framed graph the parsing occures on
     private final FramedGraph framedGraph;
+
+    private static final Logger LOGGER
+            = LogManager.getLogger(Parser.class);
 
     // A list of input paths that contain the source code files
     private final List<String> inputList = new ArrayList<>();
@@ -351,7 +361,17 @@ public class Parser {
         }
 
         Launcher launcher = new Launcher();
-        if (inputList.isEmpty()) {
+        try {
+            Files.walk(rootDirectory.toPath())
+                    .filter(path -> path.toFile().isDirectory() && path.endsWith("src"))
+                    .forEach(d -> {
+                        LOGGER.info("Added directory to input resource: " + d.toAbsolutePath().toString());
+                        launcher.addInputResource(d.toAbsolutePath().toString());
+                    });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        /*if (inputList.isEmpty()) {
             File dir = new File(rootDirectory, File.separator + "src"
                     + File.separator + "main" + File.separator + "java");
             if (!dir.exists()) {
@@ -364,7 +384,7 @@ public class Parser {
                         new File(rootDirectory, string).getAbsolutePath()
                 );
             }
-        }
+        }*/
         launcher.buildModel();
         launcher.getModel();
         SpoonModelBuilder modelBuilder = launcher.getModelBuilder();
