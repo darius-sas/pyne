@@ -14,9 +14,13 @@ import edu.rug.pyne.api.parser.structureprocessor.InterfaceProcessor;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.File;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -310,22 +314,27 @@ public class Parser {
         if (removePostProcessors.isEmpty()) {
             addDefaultRemovePostProcessors();
         }
-        Launcher launcher = new Launcher();
 
-         if (inputList.isEmpty()) {
-            File dir = new File(rootDirectory, File.separator + "src"
-                    + File.separator + "main" + File.separator + "java");
-            if (!dir.exists()) {
-                dir = new File(rootDirectory, File.separator);
-            }
-            launcher.addInputResource(dir.getAbsolutePath());
-        } else {
-            for (String string : inputList) {
-                launcher.addInputResource(
-                        new File(rootDirectory, string).getAbsolutePath()
-                );
-            }
-        }
+        Launcher launcher = new Launcher();
+        findSourceDirectories().forEach(f -> {
+            launcher.addInputResource(f.getAbsolutePath());
+            LOGGER.info("Added directory to input resource: " + f.getAbsolutePath());
+        });
+
+//         if (inputList.isEmpty()) {
+//            File dir = new File(rootDirectory, File.separator + "src"
+//                    + File.separator + "main" + File.separator + "java");
+//            if (!dir.exists()) {
+//                dir = new File(rootDirectory, File.separator);
+//            }
+//            launcher.addInputResource(dir.getAbsolutePath());
+//        } else {
+//            for (String string : inputList) {
+//                launcher.addInputResource(
+//                        new File(rootDirectory, string).getAbsolutePath()
+//                );
+//            }
+//        }
         
         launcher.buildModel();
         launcher.getModel();
@@ -361,16 +370,11 @@ public class Parser {
         }
 
         Launcher launcher = new Launcher();
-        try {
-            Files.walk(rootDirectory.toPath())
-                    .filter(path -> path.toFile().isDirectory() && path.endsWith("src"))
-                    .forEach(d -> {
-                        LOGGER.info("Added directory to input resource: " + d.toAbsolutePath().toString());
-                        launcher.addInputResource(d.toAbsolutePath().toString());
-                    });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        findSourceDirectories().forEach(f -> {
+            launcher.addInputResource(f.getAbsolutePath());
+            LOGGER.info("Added directory to input resource: " + f.getAbsolutePath());
+        });
+
         /*if (inputList.isEmpty()) {
             File dir = new File(rootDirectory, File.separator + "src"
                     + File.separator + "main" + File.separator + "java");
@@ -399,6 +403,24 @@ public class Parser {
             analysisPostProcessor.postProcess(framedGraph);
         }
 
+    }
+
+    private Set<File> findSourceDirectories() {
+        var searchStartDir = Paths.get(rootDirectory.getAbsolutePath(), "src");
+        if (!Files.exists(searchStartDir)){
+            searchStartDir = rootDirectory.toPath();
+        }
+        var testKeyword = File.separator + "test" + File.separator;
+        try(var stream = Files.walk(searchStartDir)){
+            return stream.map(Path::toFile).filter(File::isDirectory)
+                    .filter(f -> !f.getAbsolutePath().contains(testKeyword))
+                    .filter(f -> f.toPath().endsWith("src"))
+                    .collect(Collectors.toSet());
+        } catch (IOException e) {
+            LOGGER.error("Could not access input source directory.");
+        }
+
+        return Set.of();
     }
 
 }
