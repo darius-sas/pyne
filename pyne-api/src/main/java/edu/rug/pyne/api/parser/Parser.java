@@ -335,7 +335,6 @@ public class Parser {
 //                );
 //            }
 //        }
-        
         launcher.buildModel();
         launcher.getModel();
         SpoonModelBuilder modelBuilder = launcher.getModelBuilder();
@@ -375,20 +374,6 @@ public class Parser {
             LOGGER.info("Added directory to input resource: " + f.getAbsolutePath());
         });
 
-        /*if (inputList.isEmpty()) {
-            File dir = new File(rootDirectory, File.separator + "src"
-                    + File.separator + "main" + File.separator + "java");
-            if (!dir.exists()) {
-                dir = new File(rootDirectory, File.separator);
-            }
-            launcher.addInputResource(dir.getAbsolutePath());
-        } else {
-            for (String string : inputList) {
-                launcher.addInputResource(
-                        new File(rootDirectory, string).getAbsolutePath()
-                );
-            }
-        }*/
         launcher.buildModel();
         launcher.getModel();
         SpoonModelBuilder modelBuilder = launcher.getModelBuilder();

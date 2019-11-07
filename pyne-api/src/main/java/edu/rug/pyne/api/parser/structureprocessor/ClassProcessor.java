@@ -4,7 +4,10 @@ import com.syncleus.ferma.FramedGraph;
 import edu.rug.pyne.api.parser.Parser;
 import edu.rug.pyne.api.structure.VertexClass;
 import edu.rug.pyne.api.structure.VertexPackage;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
@@ -19,6 +22,8 @@ import java.util.regex.Pattern;
  * @author Patrick Beuks (s2288842) <code@beuks.net>
  */
 public class ClassProcessor extends AbstractProcessor<CtClass<?>> {
+
+    private final static Logger LOGGER = LogManager.getLogger(ClassProcessor.class.getName());
     
     // The graph to add the vertexes to
     private final FramedGraph framedGraph;
@@ -104,12 +109,17 @@ public class ClassProcessor extends AbstractProcessor<CtClass<?>> {
 
     private Pattern linePattern = Pattern.compile("[^\\s*].*[\\n\\r]+");
     private long countLOC(CtType<?> clazz){
-        var sourceCode = clazz.toString();
-
-        var matcher = linePattern.matcher(sourceCode);
         var linesOfCode = 0;
-        while(matcher.find())
-            linesOfCode++;
+        try {
+            var sourceCode = clazz.toString();
+
+            var matcher = linePattern.matcher(sourceCode);
+
+            while (matcher.find())
+                linesOfCode++;
+        }catch (SpoonException e){
+            LOGGER.warn("Spoon could not fetch class " + clazz.getQualifiedName() + ", 0 LOC assigned.");
+        }
         return linesOfCode;
     }
 
