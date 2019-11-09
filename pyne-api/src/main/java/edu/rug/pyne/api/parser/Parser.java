@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.io.File;
 import java.util.Set;
@@ -391,21 +392,33 @@ public class Parser {
     }
 
     private Set<File> findSourceDirectories() {
-        var searchStartDir = Paths.get(rootDirectory.getAbsolutePath(), "src");
-        if (!Files.exists(searchStartDir)){
-            searchStartDir = rootDirectory.toPath();
-        }
+        var searchStartDir = rootDirectory.toPath();
+        Set<File> sourceDirs = new HashSet<>();
         var testKeyword = File.separator + "test" + File.separator;
+        var exampleKeyword = "example";
         try(var stream = Files.walk(searchStartDir)){
-            return stream.map(Path::toFile).filter(File::isDirectory)
-                    .filter(f -> !f.getAbsolutePath().contains(testKeyword))
+            Set<Path> srcPaths = stream.map(Path::toFile)
+                    .filter(File::isDirectory)
                     .filter(f -> f.toPath().endsWith("src"))
+                    .filter(f -> !f.getAbsolutePath().toLowerCase().contains(testKeyword))
+                    .filter(f -> !f.getAbsolutePath().toLowerCase().contains(exampleKeyword))
+                    .map(File::toPath)
                     .collect(Collectors.toSet());
+            for (var p1 : srcPaths){
+                var addToSource = true;
+                for (var p2 : srcPaths){
+                    if(p1 != p2 && p1.startsWith(p2)){
+                        addToSource = false;
+                    }
+                }
+                if (addToSource)
+                    sourceDirs.add(p1.toFile());
+            }
         } catch (IOException e) {
-            LOGGER.error("Could not access input source directory.");
+            e.printStackTrace();
         }
 
-        return Set.of();
+        return sourceDirs;
     }
 
 }
