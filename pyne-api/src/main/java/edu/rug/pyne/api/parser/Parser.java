@@ -12,15 +12,13 @@ import edu.rug.pyne.api.parser.removeprocessor.InterfaceRemover;
 import edu.rug.pyne.api.parser.structureprocessor.ClassProcessor;
 import edu.rug.pyne.api.parser.structureprocessor.InterfaceProcessor;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.io.File;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.LogManager;
@@ -392,6 +390,11 @@ public class Parser {
     }
 
     private Set<File> findSourceDirectories() {
+        var propsFile = Paths.get(rootDirectory.getAbsolutePath(), "sources.properties");
+        if (propsFile.toFile().exists()){
+            LOGGER.info("Using sources.properties file to read input sources.");
+            return getFromPropertiesFile(propsFile.toFile());
+        }
         var searchStartDir = rootDirectory.toPath();
         Set<File> sourceDirs = new HashSet<>();
         var testKeyword = File.separator + "test" + File.separator;
@@ -419,6 +422,42 @@ public class Parser {
         }
 
         return sourceDirs;
+    }
+
+    private Set<File> getFromPropertiesFile(File propsFile){
+        Properties props = new Properties();
+        try(var fis = new FileInputStream(propsFile)){
+            props.load(fis);
+        }catch (IOException e){
+            LOGGER.error("Could not read from sources properties file " + propsFile.getAbsolutePath());
+        }
+        String include = props.getProperty("sources.include", "src");
+        String exclude = props.getProperty("sources.exclude", "test");
+
+        var includeList = List.of(include.split(File.pathSeparator));
+        var excludeList = List.of(exclude.split(File.pathSeparator));
+
+        var srcDirs = new HashSet<File>();
+
+        for (var inputDir : includeList){
+            var file = Paths.get(rootDirectory.getAbsolutePath(), inputDir).toFile();
+            var isExcluded = false;
+            if (file.exists() && file.isDirectory()){
+                for (var excludeDir : excludeList) {
+                    var excl = Paths.get(rootDirectory.getAbsolutePath(), excludeDir);
+                    if (file.toPath().startsWith(excl)){
+                        isExcluded = true;
+                        break;
+                    }
+                }
+                if(!isExcluded)
+                    srcDirs.add(file);
+            }
+        }
+        if (srcDirs.isEmpty()){
+            srcDirs.add(Paths.get(rootDirectory.getAbsolutePath(), "src").toFile());
+        }
+        return srcDirs;
     }
 
 }
