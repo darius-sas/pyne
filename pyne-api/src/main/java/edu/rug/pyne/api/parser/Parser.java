@@ -294,6 +294,19 @@ public class Parser {
         return modifiedFiles;
     }
 
+    private Launcher getLauncher(){
+        var launcher = new Launcher();
+        launcher.getEnvironment().setIgnoreDuplicateDeclarations(true);
+        launcher.getEnvironment().setCommentEnabled(false);
+        launcher.getEnvironment().setNoClasspath(true);
+        launcher.getEnvironment().setComplianceLevel(9);
+        findSourceDirectories().forEach(f -> {
+            launcher.addInputResource(f.getAbsolutePath());
+            LOGGER.info("Added directory to input resource: " + f.getAbsolutePath());
+        });
+        return launcher;
+    }
+
     /**
      * Processes the removed files. If removedFiles is set to null then this not
      * execute anything.
@@ -314,26 +327,7 @@ public class Parser {
             addDefaultRemovePostProcessors();
         }
 
-        Launcher launcher = new Launcher();
-        findSourceDirectories().forEach(f -> {
-            launcher.addInputResource(f.getAbsolutePath());
-            LOGGER.info("Added directory to input resource: " + f.getAbsolutePath());
-        });
-
-//         if (inputList.isEmpty()) {
-//            File dir = new File(rootDirectory, File.separator + "src"
-//                    + File.separator + "main" + File.separator + "java");
-//            if (!dir.exists()) {
-//                dir = new File(rootDirectory, File.separator);
-//            }
-//            launcher.addInputResource(dir.getAbsolutePath());
-//        } else {
-//            for (String string : inputList) {
-//                launcher.addInputResource(
-//                        new File(rootDirectory, string).getAbsolutePath()
-//                );
-//            }
-//        }
+        Launcher launcher = getLauncher();
         launcher.buildModel();
         launcher.getModel();
         SpoonModelBuilder modelBuilder = launcher.getModelBuilder();
@@ -367,11 +361,7 @@ public class Parser {
             addDefaultAnalysisPostProcessors();
         }
 
-        Launcher launcher = new Launcher();
-        findSourceDirectories().forEach(f -> {
-            launcher.addInputResource(f.getAbsolutePath());
-            LOGGER.info("Added directory to input resource: " + f.getAbsolutePath());
-        });
+        Launcher launcher = getLauncher();
 
         launcher.buildModel();
         launcher.getModel();
@@ -414,8 +404,9 @@ public class Parser {
                         addToSource = false;
                     }
                 }
-                if (addToSource)
+                if (addToSource) {
                     sourceDirs.add(p1.toFile());
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -455,6 +446,7 @@ public class Parser {
             }
         }
         if (srcDirs.isEmpty()){
+            LOGGER.warn("Could not find any directory from source.properties file. Falling back to 'src' dir.");
             srcDirs.add(Paths.get(rootDirectory.getAbsolutePath(), "src").toFile());
         }
         return srcDirs;
