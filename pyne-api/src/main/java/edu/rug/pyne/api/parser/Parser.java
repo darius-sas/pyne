@@ -379,11 +379,16 @@ public class Parser {
 
     }
 
-    private Set<File> findSourceDirectories() {
+    public Set<File> findSourceDirectories() {
         var propsFile = Paths.get(rootDirectory.getAbsolutePath(), "sources.properties");
         if (propsFile.toFile().exists()){
             LOGGER.info("Using sources.properties file to read input sources.");
-            return getFromPropertiesFile(propsFile.toFile());
+            var srcDirs = getFromPropertiesFile(propsFile.toFile());
+            if (srcDirs.isEmpty()){
+                LOGGER.warn("Could not find any directory from source.properties file. Falling back to recursive src dir.");
+            }else {
+                return srcDirs;
+            }
         }
         var searchStartDir = rootDirectory.toPath();
         Set<File> sourceDirs = new HashSet<>();
@@ -415,7 +420,7 @@ public class Parser {
         return sourceDirs;
     }
 
-    private Set<File> getFromPropertiesFile(File propsFile){
+    public Set<File> getFromPropertiesFile(File propsFile){
         Properties props = new Properties();
         try(var fis = new FileInputStream(propsFile)){
             props.load(fis);
@@ -432,22 +437,9 @@ public class Parser {
 
         for (var inputDir : includeList){
             var file = Paths.get(rootDirectory.getAbsolutePath(), inputDir).toFile();
-            var isExcluded = false;
             if (file.exists() && file.isDirectory()){
-                for (var excludeDir : excludeList) {
-                    var excl = Paths.get(rootDirectory.getAbsolutePath(), excludeDir);
-                    if (file.toPath().startsWith(excl)){
-                        isExcluded = true;
-                        break;
-                    }
-                }
-                if(!isExcluded)
-                    srcDirs.add(file);
+                srcDirs.add(file);
             }
-        }
-        if (srcDirs.isEmpty()){
-            LOGGER.warn("Could not find any directory from source.properties file. Falling back to 'src' dir.");
-            srcDirs.add(Paths.get(rootDirectory.getAbsolutePath(), "src").toFile());
         }
         return srcDirs;
     }
