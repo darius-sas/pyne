@@ -397,7 +397,7 @@ public class Parser {
         try(var stream = Files.walk(searchStartDir)){
             Set<Path> srcPaths = stream.map(Path::toFile)
                     .filter(File::isDirectory)
-                    .filter(f -> f.toPath().endsWith("src"))
+                    .filter(f -> f.toPath().endsWith("src/main") || f.toPath().endsWith("src/java") )
                     .filter(f -> !f.getAbsolutePath().toLowerCase().contains(testKeyword))
                     .filter(f -> !f.getAbsolutePath().toLowerCase().contains(exampleKeyword))
                     .map(File::toPath)
