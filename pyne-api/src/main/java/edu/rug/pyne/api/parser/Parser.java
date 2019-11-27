@@ -407,7 +407,7 @@ public class Parser {
                 try(var stream2 = Files.walk(rootDirectory.toPath())){
                     sourceDirs = stream2.map(Path::toFile)
                             .filter(File::isDirectory)
-                            .filter(f -> f.toPath().endsWith("src") || f.toPath().endsWith("src"))
+                            .filter(f -> f.toPath().endsWith("src"))
                             .filter(f -> !f.getAbsolutePath().toLowerCase().contains(testKeyword))
                             .filter(f -> !f.getAbsolutePath().toLowerCase().contains(exampleKeyword))
                             .collect(Collectors.toSet());
