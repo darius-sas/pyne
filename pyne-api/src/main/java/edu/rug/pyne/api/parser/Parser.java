@@ -299,6 +299,7 @@ public class Parser {
         launcher.getEnvironment().setIgnoreDuplicateDeclarations(true);
         launcher.getEnvironment().setCommentEnabled(false);
         launcher.getEnvironment().setNoClasspath(true);
+        launcher.getEnvironment().setShouldCompile(false);
         launcher.getEnvironment().setComplianceLevel(9);
         findSourceDirectories().forEach(f -> {
             launcher.addInputResource(f.getAbsolutePath());
@@ -395,22 +396,21 @@ public class Parser {
         var testKeyword = File.separator + "test" + File.separator;
         var exampleKeyword = "example";
         try(var stream = Files.walk(searchStartDir)){
-            Set<Path> srcPaths = stream.map(Path::toFile)
+            sourceDirs = stream.map(Path::toFile)
                     .filter(File::isDirectory)
-                    .filter(f -> f.toPath().endsWith("src/main") || f.toPath().endsWith("src/java") )
+                    .filter(f -> f.toPath().endsWith("src/main") || f.toPath().endsWith("src/java"))
                     .filter(f -> !f.getAbsolutePath().toLowerCase().contains(testKeyword))
                     .filter(f -> !f.getAbsolutePath().toLowerCase().contains(exampleKeyword))
-                    .map(File::toPath)
                     .collect(Collectors.toSet());
-            for (var p1 : srcPaths){
-                var addToSource = true;
-                for (var p2 : srcPaths){
-                    if(p1 != p2 && p1.startsWith(p2)){
-                        addToSource = false;
-                    }
-                }
-                if (addToSource) {
-                    sourceDirs.add(p1.toFile());
+            if (sourceDirs.isEmpty()){
+                LOGGER.warn("Could not find any non-test Java source directory recursively. Using generic 'src'.");
+                try(var stream2 = Files.walk(rootDirectory.toPath())){
+                    sourceDirs = stream2.map(Path::toFile)
+                            .filter(File::isDirectory)
+                            .filter(f -> f.toPath().endsWith("src") || f.toPath().endsWith("src"))
+                            .filter(f -> !f.getAbsolutePath().toLowerCase().contains(testKeyword))
+                            .filter(f -> !f.getAbsolutePath().toLowerCase().contains(exampleKeyword))
+                            .collect(Collectors.toSet());
                 }
             }
         } catch (IOException e) {
