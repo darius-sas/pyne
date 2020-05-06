@@ -4,6 +4,8 @@ import com.syncleus.ferma.FramedGraph;
 import edu.rug.pyne.api.parser.PostProcess;
 import edu.rug.pyne.api.structure.VertexClass;
 import java.util.List;
+
+import edu.rug.pyne.api.structure.VertexPackage;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
@@ -68,19 +70,20 @@ public class ClassPostProcess implements PostProcess {
             // needed.
             for (VertexClass outVertex : outVertexes) {
                 // Do not add the edge if it belongs to its blongs to package
-                if (systemClass.getBelongsToPackage()
-                        .equals(outVertex.getBelongsToPackage())) {
+                VertexPackage classBelongsToPackage = systemClass.getBelongsToPackage();
+                VertexPackage outVertexBelongsToPackage = outVertex.getBelongsToPackage();
+                if (classBelongsToPackage == null || classBelongsToPackage.equals(outVertexBelongsToPackage)) {
                     continue;
                 }
 
-                if (!systemClass.getAfferentOfPackages()
-                        .contains(outVertex.getBelongsToPackage())) {
-                    systemClass.addAfferentOf(outVertex.getBelongsToPackage());
+                if (outVertexBelongsToPackage != null && !systemClass.getAfferentOfPackages()
+                        .contains(outVertexBelongsToPackage)) {
+                    systemClass.addAfferentOf(outVertexBelongsToPackage);
                 }
 
                 if (!outVertex.getEfferentOfPackages()
-                        .contains(systemClass.getBelongsToPackage())) {
-                    outVertex.addEfferentOf(systemClass.getBelongsToPackage());
+                        .contains(classBelongsToPackage)) {
+                    outVertex.addEfferentOf(classBelongsToPackage);
                 }
             }
 

@@ -17,14 +17,9 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtInvocation;
-import spoon.reflect.declaration.CtAnnotation;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 
@@ -92,8 +87,13 @@ public class ClassAnalysis extends AbstractProcessor<CtClass<?>> {
                 return;
             }
             CtExecutableReference executable = (CtExecutableReference) element;
-            if (executable.getType() != null) {
-                dependences.add(executable.getType().getTypeDeclaration());
+            try {
+                CtTypeReference executableType = executable.getType();
+                if (executableType != null && executableType.getDeclaration() != null) {
+                    dependences.add(executableType.getTypeDeclaration());
+                }
+            }catch (NullPointerException e){
+                // Ignore spoon errors
             }
         }
     }
@@ -165,6 +165,8 @@ public class ClassAnalysis extends AbstractProcessor<CtClass<?>> {
         }
 
         for (CtTypeReference<?> superInterface : clazz.getSuperInterfaces()) {
+            if (superInterface == null)
+                continue;
             VertexClass superInterfaceClass
                     = getOrCreateVertexClass(superInterface);
             vertexClass.addImplematationOfClass(superInterfaceClass);
@@ -182,15 +184,12 @@ public class ClassAnalysis extends AbstractProcessor<CtClass<?>> {
     private void processClassReferences(CtType clazz, VertexClass vertexClass) {
 
         for (CtType referencedClass : getClassReferences(clazz)) {
-            if (referencedClass == null) {
+            if (referencedClass == null || referencedClass.getReference() == null) {
                 continue;
             }
-
             VertexClass referencedClassVertex
-                    = getOrCreateVertexClass(referencedClass.getReference());
-
-            vertexClass.addDependOnClass(referencedClassVertex);
-
+                        = getOrCreateVertexClass(referencedClass.getReference());
+                vertexClass.addDependOnClass(referencedClassVertex);
         }
 
     }
@@ -292,10 +291,13 @@ public class ClassAnalysis extends AbstractProcessor<CtClass<?>> {
         // until we find the parent class that does have a package.
         CtTypeReference cur = clazz;
         while (!cur.isPrimitive() && cur.getPackage() == null) {
-            cur = cur.getDeclaringType();
+            var tmp = cur.getDeclaringType();
+            if (tmp == null || tmp.getPackage() == null)
+                break;
+            cur = tmp;
         }
         
-        VertexPackage packageVertex;
+        VertexPackage packageVertex = null;
         // If the type is a primative (like int or byte) it does not have a
         // package, So we set it to java.lang
         if (cur.isPrimitive()) {
@@ -308,18 +310,23 @@ public class ClassAnalysis extends AbstractProcessor<CtClass<?>> {
             }
         } else {
             // Get or create the package by name.
-            packageVertex = VertexPackage.getVertexPackageByName(
-                    framedGraph, cur.getPackage().getQualifiedName()
-            );
-            if (packageVertex == null) {
-                packageVertex = VertexPackage.createVertexPackage(
-                        framedGraph, cur.getPackage()
+            CtPackageReference ctPackage = cur.getPackage();
+            if (ctPackage != null) {
+                packageVertex = VertexPackage.getVertexPackageByName(
+                        framedGraph, ctPackage.getQualifiedName()
                 );
+                if (packageVertex == null) {
+                    packageVertex = VertexPackage.createVertexPackage(
+                            framedGraph, ctPackage
+                    );
+                }
             }
         }
 
         // Set the belongsTo edge.
-        vertexClass.setBelongsTo(packageVertex);
+        if (packageVertex != null) {
+            vertexClass.setBelongsTo(packageVertex);
+        }
 
         return vertexClass;
     }
