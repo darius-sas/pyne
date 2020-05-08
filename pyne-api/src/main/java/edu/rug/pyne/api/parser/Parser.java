@@ -386,7 +386,7 @@ public class Parser {
             LOGGER.info("Using sources.properties file to read input sources.");
             var srcDirs = getFromPropertiesFile(propsFile.toFile());
             if (srcDirs.isEmpty()){
-                LOGGER.warn("Could not find any directory from source.properties file. Falling back to recursive src dir.");
+                LOGGER.warn("Could not find any directory from sources.properties file. Falling back to recursive src dir.");
             }else {
                 return srcDirs;
             }

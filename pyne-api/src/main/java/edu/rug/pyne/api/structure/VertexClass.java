@@ -260,13 +260,14 @@ public abstract class VertexClass extends AbstractVertexFrame {
      */
     public void removeBelongsTo() {
         VertexPackage belongsToPackage = getBelongsToPackage();
+        if (belongsToPackage != null) {
+            belongsToPackage.decrementNumOfClassesInPackage();
+            getBelongsTo().remove();
 
-        belongsToPackage.decrementNumOfClassesInPackage();
-        getBelongsTo().remove();
-        
-        // If no more classes belong to the package, remove the package.
-        if (belongsToPackage.getNumOfClassesInPackage() == 0) {
-            belongsToPackage.remove();
+            // If no more classes belong to the package, remove the package.
+            if (belongsToPackage.getNumOfClassesInPackage() == 0) {
+                belongsToPackage.remove();
+            }
         }
     }
 
