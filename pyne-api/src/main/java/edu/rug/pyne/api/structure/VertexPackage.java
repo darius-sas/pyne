@@ -67,7 +67,7 @@ public abstract class VertexPackage extends AbstractVertexFrame {
     ) {
 
         // Check if this package comes from within the source files
-        String packageType = ctPackage.isImplicit() ||  ctPackage.getDeclaration() == null || ctPackage.isUnnamedPackage()
+        String packageType = ctPackage.isImplicit() || ctPackage.getSimpleName().equals("$") ||  ctPackage.getDeclaration() == null || ctPackage.isUnnamedPackage()
                 ? "RetrievedPackage" : "SystemPackage";
 
         VertexPackage vertex = framedGraph.addFramedVertex(

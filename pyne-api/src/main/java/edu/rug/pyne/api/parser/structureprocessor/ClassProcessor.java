@@ -59,50 +59,53 @@ public class ClassProcessor extends AbstractProcessor<CtClass<?>> {
      * @param clazz The class or interface to process
      */
     public void processClass(CtType<?> clazz) {
-
-        // Check if it only needs to parse added files.
-        // If null process all given classes
-        if (parser.getAddedFiles() != null) {
-            // Check if the current class is in an added file. 
-            // If not we do not have to process it.
-            if (!parser.getAddedFiles().contains(
-                    clazz.getPosition().getFile()
-            )) {
-                return;
+        try {
+            // Check if it only needs to parse added files.
+            // If null process all given classes
+            if (parser.getAddedFiles() != null) {
+                // Check if the current class is in an added file.
+                // If not we do not have to process it.
+                if (!parser.getAddedFiles().contains(
+                        clazz.getPosition().getFile()
+                )) {
+                    return;
+                }
             }
-        }
 
-        // Try to get the vertex by name
-        VertexClass vertex = VertexClass.getVertexClassByName(
-                framedGraph, clazz.getQualifiedName()
-        );
-
-        // Check if the class exists, if not create it.
-        if (vertex == null) {
-            vertex = VertexClass.createSystemClass(framedGraph, clazz);
-        }
-
-        // Check if the vertex has a belonging package, if not add it.
-        if (vertex.getBelongsToPackage() == null) {
-
-            CtTypeReference cur = clazz.getReference();
-            while (cur.getPackage() == null) {
-                cur = cur.getDeclaringType();
-            }
-            // Try to get the package by name
-            VertexPackage packageVertex = VertexPackage.getVertexPackageByName(
-                    framedGraph, cur.getPackage().getQualifiedName()
+            // Try to get the vertex by name
+            VertexClass vertex = VertexClass.getVertexClassByName(
+                    framedGraph, clazz.getQualifiedName()
             );
-            
-            // Check if the package exists, if not create it.
-            if (packageVertex == null) {
-                packageVertex = VertexPackage.createVertexPackage(
-                        framedGraph, cur.getPackage()
-                );
+
+            // Check if the class exists, if not create it.
+            if (vertex == null) {
+                vertex = VertexClass.createSystemClass(framedGraph, clazz);
             }
-            
-            vertex.setBelongsTo(packageVertex);
-            vertex.setLinesOfCode(countLOC(clazz));
+
+            // Check if the vertex has a belonging package, if not add it.
+            if (vertex.getBelongsToPackage() == null) {
+
+                CtTypeReference cur = clazz.getReference();
+                while (cur.getPackage() == null) {
+                    cur = cur.getDeclaringType();
+                }
+                // Try to get the package by name
+                VertexPackage packageVertex = VertexPackage.getVertexPackageByName(
+                        framedGraph, cur.getPackage().getQualifiedName()
+                );
+
+                // Check if the package exists, if not create it.
+                if (packageVertex == null) {
+                    packageVertex = VertexPackage.createVertexPackage(
+                            framedGraph, cur.getPackage()
+                    );
+                }
+
+                vertex.setBelongsTo(packageVertex);
+                vertex.setLinesOfCode(countLOC(clazz));
+            }
+        }catch (Exception e){
+            LOGGER.error("Spoon error while analysing class " + clazz.getQualifiedName() + ": " + e.getMessage());
         }
 
     }
