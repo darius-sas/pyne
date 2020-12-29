@@ -7,8 +7,8 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -262,7 +262,7 @@ public class GitHelper {
         try {
             FileUtils.delete(cloneDir, FileUtils.RECURSIVE);
         } catch (IOException ex) {
-            LOGGER.trace(null, ex);
+            LOGGER.trace(ex);
         }
         git.close();
         cleand = true;

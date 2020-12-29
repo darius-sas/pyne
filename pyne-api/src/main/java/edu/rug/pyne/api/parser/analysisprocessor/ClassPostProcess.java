@@ -6,8 +6,8 @@ import edu.rug.pyne.api.structure.VertexClass;
 import java.util.List;
 
 import edu.rug.pyne.api.structure.VertexPackage;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 
 /**

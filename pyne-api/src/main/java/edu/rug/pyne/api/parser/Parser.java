@@ -21,8 +21,8 @@ import java.util.*;
 import java.io.File;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
@@ -295,7 +295,7 @@ public class Parser {
     }
 
     private Launcher getLauncher(){
-        var launcher = new Launcher();
+        var launcher = new ArcanSpoonLauncher();
         launcher.getEnvironment().setIgnoreDuplicateDeclarations(true);
         launcher.getEnvironment().setCommentEnabled(false);
         launcher.getEnvironment().setNoClasspath(true);
