@@ -163,6 +163,7 @@ public class GitHelper {
     private void diffGraph(Parser parser, String oldCommit, String newCommit)
             throws GitAPIException, IOException {
 
+
         Repository repository = git.getRepository();
         RevWalk revWalk = new RevWalk(repository);
         ObjectReader reader = repository.newObjectReader();
