@@ -40,6 +40,7 @@ public class Parser {
     // The framed graph the parsing occures on
     private final FramedGraph framedGraph;
 
+    public static String SPOON_LOGGER_LEVEL = "INFO";
     private static final Logger LOGGER
             = LogManager.getLogger(Parser.class);
 
@@ -296,6 +297,7 @@ public class Parser {
 
     private Launcher getLauncher(){
         var launcher = new ArcanSpoonLauncher();
+        launcher.getEnvironment().setLevel(SPOON_LOGGER_LEVEL);
         launcher.getEnvironment().setIgnoreDuplicateDeclarations(true);
         launcher.getEnvironment().setCommentEnabled(false);
         launcher.getEnvironment().setNoClasspath(true);

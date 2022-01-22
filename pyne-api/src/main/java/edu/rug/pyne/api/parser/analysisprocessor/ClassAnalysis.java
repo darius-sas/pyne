@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
@@ -33,6 +36,8 @@ public class ClassAnalysis extends AbstractProcessor<CtClass<?>> {
 
     // The graph with the vertex classes
     private final FramedGraph framedGraph;
+
+    private final static Logger logger = LogManager.getLogger();
 
     // The parser containing additional information
     private final Parser parser;
@@ -117,6 +122,7 @@ public class ClassAnalysis extends AbstractProcessor<CtClass<?>> {
      */
     @Override
     public void process(CtClass<?> clazz) {
+        logger.trace("Processing {}", clazz.getQualifiedName());
         this.processClass(clazz);
     }
 

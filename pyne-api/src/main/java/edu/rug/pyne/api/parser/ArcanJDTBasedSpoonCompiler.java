@@ -18,9 +18,10 @@ public class ArcanJDTBasedSpoonCompiler extends JDTBasedSpoonCompiler {
     @Override
     protected void traverseUnitDeclaration(JDTTreeBuilder builder, CompilationUnitDeclaration unitDeclaration) {
         try {
+            logger.trace("Spoon is parsing file {}", String.valueOf(unitDeclaration.getFileName()));
             super.traverseUnitDeclaration(builder, unitDeclaration);
         }catch (Exception | Error e){
-            logger.warn("Failed to parse Java file {}: {}", String.valueOf(unitDeclaration.getFileName()), e.getMessage());
+            logger.warn("Failed to parse file {}: {}", String.valueOf(unitDeclaration.getFileName()), e.getMessage());
         }
     }
 }
