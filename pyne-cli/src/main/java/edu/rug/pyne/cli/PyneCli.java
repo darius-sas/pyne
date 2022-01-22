@@ -104,7 +104,7 @@ public class PyneCli {
 
         // Create a new parser
         CommandLineParser cliParser = new DefaultParser();
-        CommandLine cmd = cliParser.parse(options, args);
+        CommandLine             cmd = cliParser.parse(options, args);
 
         // Check if help is an argument and display the help
         if (cmd.hasOption(help.getOpt())) {
