@@ -3,12 +3,14 @@ package edu.rug.pyne.structure;
 import edu.rug.pyne.api.parser.Parser;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 
 public class ParserTest {
 
+    @Disabled("Only used for debugging purposes")
     @Test
     void testFindSourceDirs(){
         var rootDir = "";
